@@ -11,7 +11,7 @@ import {
   MenuItem,
   Text,
 } from '@chakra-ui/react'
-import { ChevronDownIcon, MoonIcon, SunIcon } from '@chakra-ui/icons'
+import { MoonIcon, SunIcon, HamburgerIcon } from '@chakra-ui/icons'
 
 import { useMediaQuery } from '@chakra-ui/react'
 
@@ -54,8 +54,8 @@ export const Header = () => {
 
       {isLessThan800 && (
         <Menu>
-          <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
-            Menu
+          <MenuButton as={Button}>
+            <HamburgerIcon />
           </MenuButton>
 
           <MenuList>

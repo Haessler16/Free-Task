@@ -1,7 +1,8 @@
 export interface iNotes {
+  id: number
   title: string
   description: string
-  created: Date
+  created: number
   user: any
   characters: number
 }

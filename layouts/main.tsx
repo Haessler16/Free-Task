@@ -8,8 +8,9 @@ interface iMainLayout {
 
 export const MainLayout: FC<iMainLayout> = ({ children }) => {
   return (
-    <Box w='100%'>
+    <Box w='100%' h='100%'>
       <Header />
+
       {children}
     </Box>
   )

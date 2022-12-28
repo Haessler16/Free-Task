@@ -54,7 +54,7 @@ export const Header = () => {
 
       {isLessThan800 && (
         <Menu>
-          <MenuButton as={Button}>
+          <MenuButton as={Button} title='Hamburger Icon'>
             <HamburgerIcon />
           </MenuButton>
 
@@ -71,7 +71,7 @@ export const Header = () => {
               </Link>
             </MenuItem>
 
-            <MenuItem justifyContent='space-between'>
+            <MenuItem as='div' justifyContent='space-between'>
               <Text fontSize='lg' fontWeight='bold'>
                 Theme:
               </Text>

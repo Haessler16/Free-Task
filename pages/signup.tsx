@@ -1,3 +1,7 @@
+import type { NextPage } from 'next'
+import NextLink from 'next/link'
+import Head from 'next/head'
+
 import {
   FormControl,
   FormLabel,
@@ -6,10 +10,14 @@ import {
   Input,
   Select,
   Button,
+  Center,
+  Card,
+  chakra,
+  Heading,
+  Link,
 } from '@chakra-ui/react'
-import Head from 'next/head'
 
-const signup = () => {
+const Signup: NextPage = () => {
   return (
     <>
       <Head>
@@ -18,26 +26,66 @@ const signup = () => {
         <link rel='icon' href='/asignacion.png' />
       </Head>
 
-      <FormControl>
-        <FormLabel>Name</FormLabel>
-        <Input type='text' />
+      <chakra.header
+        display='flex'
+        justifyContent='space-between'
+        alignItems='center'
+        bg='#09f'
+        boxShadow='lg'
+        p={3}
+        mb={3}>
+        <Link
+          as={NextLink}
+          href='/'
+          fontSize='lg'
+          fontWeight='bold'
+          _hover={{ textDecoration: 'none' }}>
+          <Heading>Free Task</Heading>
+        </Link>
 
-        <FormLabel>Email address</FormLabel>
-        <Input type='email' />
+        <>
+          <Link as={NextLink} href='/api/auth/signin' fontWeight='bold'>
+            Sign In
+          </Link>
 
-        <FormLabel>Password</FormLabel>
-        <Input type='password' />
+          {/* <Button
+            onClick={toggleColorMode}
+            background='whiteAlpha.400'
+            boxShadow='2xl'>
+            {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
+          </Button> */}
+        </>
+      </chakra.header>
 
-        <FormLabel>Role</FormLabel>
-        <Select>
-          <option value='admin'>Admin</option>
-          <option value='edit'>Edit</option>
-          <option value='read'>Read</option>
-        </Select>
+      <Center h='calc(100vh - 80px)'>
+        <Card p='6' w='clamp(270px,50%, 400px)'>
+          <FormControl>
+            <FormLabel>Name</FormLabel>
+            <Input type='text' />
 
-        <Button type='submit'>Sign Up</Button>
-      </FormControl>
+            <FormLabel>Email address</FormLabel>
+            <Input type='email' />
+
+            <FormLabel>Password</FormLabel>
+            <Input type='password' />
+
+            <FormLabel>Role</FormLabel>
+            <Select>
+              <option value='admin'>Admin</option>
+              <option value='edit'>Edit</option>
+              <option value='read'>Read</option>
+            </Select>
+
+            <Center mt='4'>
+              <Button bg='#09f' type='submit'>
+                Sign Up
+              </Button>
+            </Center>
+          </FormControl>
+        </Card>
+      </Center>
     </>
   )
 }
-export default signup
+
+export default Signup

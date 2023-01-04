@@ -10,10 +10,12 @@ import {
   MenuList,
   MenuItem,
   Text,
+  Center,
 } from '@chakra-ui/react'
 import { MoonIcon, SunIcon, HamburgerIcon } from '@chakra-ui/icons'
 
 import { useMediaQuery } from '@chakra-ui/react'
+import { signIn } from 'next-auth/react'
 
 export const LandingHeader = () => {
   const { colorMode, toggleColorMode } = useColorMode()
@@ -27,15 +29,17 @@ export const LandingHeader = () => {
       display='flex'
       justifyContent='space-between'
       alignItems='center'
-      background='blue.300'
+      bg='#09f'
       boxShadow='lg'
       p={3}
       mb={3}>
       <Heading>Free Task</Heading>
 
       {!isLessThan800 && (
-        <>
-          <Link fontWeight='bold'>Sign In</Link>
+        <Center gap='4'>
+          <Link fontWeight='bold' onClick={() => signIn()}>
+            Sign In
+          </Link>
 
           <Link as={NextLink} href='/signup' fontWeight='bold'>
             Sing Up
@@ -47,7 +51,7 @@ export const LandingHeader = () => {
             boxShadow='2xl'>
             {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
           </Button>
-        </>
+        </Center>
       )}
 
       {isLessThan800 && (

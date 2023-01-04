@@ -6,7 +6,7 @@ export interface iNotes {
   title: string
   description: string
   characters: number
-  created: number
+  createdAt: number
   user: iUser
   folder: iFolder
 }

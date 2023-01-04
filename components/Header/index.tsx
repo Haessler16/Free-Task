@@ -27,7 +27,7 @@ export const Header = () => {
       display='flex'
       justifyContent='space-between'
       alignItems='center'
-      background='blue.300'
+      bg='#09f'
       boxShadow='lg'
       p={3}
       mb={3}>

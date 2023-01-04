@@ -10,10 +10,53 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  read
+  edit
+  admin
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  image     String
+  createdAt DateTime @default(now())
+  role      Role     @default(admin)
+  notes     Notes[]
+  task      Task[]
+}
+
+model Folder {
+  id    Int     @id @default(autoincrement())
+  title String
+  notes Notes[]
+}
+
 model Notes {
   id          Int      @id @default(autoincrement())
   title       String
   description String
   characters  Int
   createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id])
+  userId      Int
+  folder      Folder?  @relation(fields: [folderId], references: [id])
+  folderId    Int?
+}
+
+model Task {
+  id        Int       @id @default(autoincrement())
+  title     String
+  createdAt DateTime  @default(now())
+  subtask   SubTask[]
+  user      User?     @relation(fields: [userId], references: [id])
+  userId    Int?
+}
+
+model SubTask {
+  id     Int    @id @default(autoincrement())
+  title  String
+  task   Task?  @relation(fields: [taskId], references: [id])
+  taskId Int?
 }

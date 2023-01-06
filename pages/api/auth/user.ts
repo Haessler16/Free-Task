@@ -23,7 +23,7 @@ export default function CredentialsAuth(
       id: 6,
       email: '',
       name: '',
-      created: Date.now(),
+      createdAt: Date.now(),
       role: 'admin',
       image: '',
       notes: [],

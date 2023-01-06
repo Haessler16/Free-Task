@@ -1,4 +1,5 @@
 import NextLink from 'next/link'
+import Image from 'next/image'
 import {
   Button,
   chakra,
@@ -17,6 +18,8 @@ import { MoonIcon, SunIcon, HamburgerIcon } from '@chakra-ui/icons'
 import { useMediaQuery } from '@chakra-ui/react'
 import { signIn } from 'next-auth/react'
 
+import logoNoBg from '/public/logoNoBackground.png'
+
 export const LandingHeader = () => {
   const { colorMode, toggleColorMode } = useColorMode()
   const [isLessThan800] = useMediaQuery('(max-width: 760px)', {
@@ -31,9 +34,9 @@ export const LandingHeader = () => {
       alignItems='center'
       bg='#09f'
       boxShadow='lg'
-      p={3}
-      mb={3}>
-      <Heading>Free Task</Heading>
+      p={3}>
+      <Image src={logoNoBg} alt='Free Task Icon' width={140} height={140} />
+      {/* <Heading>Free Task</Heading> */}
 
       {!isLessThan800 && (
         <Center gap='4'>

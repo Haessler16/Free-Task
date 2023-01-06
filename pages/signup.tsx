@@ -5,8 +5,8 @@ import Head from 'next/head'
 import {
   FormControl,
   FormLabel,
-  FormErrorMessage,
-  FormHelperText,
+  // FormErrorMessage,
+  // FormHelperText,
   Input,
   Select,
   Button,
@@ -16,8 +16,35 @@ import {
   Heading,
   Link,
 } from '@chakra-ui/react'
+import { useState } from 'react'
+import { signIn } from 'next-auth/react'
 
 const Signup: NextPage = () => {
+  // const [name, setName] = useState('')
+  // const [email, setEmail] = useState('')
+  // const [password, setPassword] = useState('')
+  // const [role, setRole] = useState('admin')
+  const [img, setImg] = useState('')
+
+  const handleSubmit = async (e: { preventDefault?: any; target: any }) => {
+    e.preventDefault()
+    const { target } = e
+
+    const image = `https://avatars.dicebear.com/api/initials/${target.name.value}.svg`
+    const name = target.name.value
+    const email = target.email.value
+    const role = target.role.value
+
+    const bum = await fetch('api/user', {
+      method: 'POST',
+      body: JSON.stringify({ name, email, image, role }),
+    })
+    const res = await bum.json()
+    console.log({ name, email, image, role, res })
+  }
+
+  // console.log({ name, email, password, role, img })
+
   return (
     <>
       <Head>
@@ -32,7 +59,8 @@ const Signup: NextPage = () => {
         alignItems='center'
         bg='#09f'
         boxShadow='lg'
-        p={3}
+        px={4}
+        py={3}
         mb={3}>
         <Link
           as={NextLink}
@@ -44,7 +72,7 @@ const Signup: NextPage = () => {
         </Link>
 
         <>
-          <Link as={NextLink} href='/api/auth/signin' fontWeight='bold'>
+          <Link onClick={() => signIn()} fontWeight='bold'>
             Sign In
           </Link>
 
@@ -58,29 +86,46 @@ const Signup: NextPage = () => {
       </chakra.header>
 
       <Center h='calc(100vh - 80px)'>
-        <Card p='6' w='clamp(270px,50%, 400px)'>
+        <Card px='6' py='10' w='clamp(270px,50%, 400px)'>
           <FormControl>
-            <FormLabel>Name</FormLabel>
-            <Input type='text' />
+            <form onSubmit={handleSubmit}>
+              <FormLabel>Name</FormLabel>
+              <Input
+                name='name'
+                type='text'
+                // onChange={(res) => setName(res.target.value)}
+              />
 
-            <FormLabel>Email address</FormLabel>
-            <Input type='email' />
+              <FormLabel>Email address</FormLabel>
+              <Input
+                name='email'
+                type='email'
+                // onChange={(res) => setEmail(res.target.value)}
+              />
 
-            <FormLabel>Password</FormLabel>
-            <Input type='password' />
+              <FormLabel>Password</FormLabel>
+              <Input
+                name='password'
+                type='password'
+                // onChange={(res) => setPassword(res.target.value)}
+              />
 
-            <FormLabel>Role</FormLabel>
-            <Select>
-              <option value='admin'>Admin</option>
-              <option value='edit'>Edit</option>
-              <option value='read'>Read</option>
-            </Select>
+              <FormLabel>Role</FormLabel>
+              <Select
+                name='role'
+                // onChange={(res) => setRole(res.target.value)}
+              >
+                <option value='admin'>Admin</option>
+                <option value='edit'>Edit</option>
+                <option value='read'>Read</option>
+              </Select>
 
-            <Center mt='4'>
-              <Button bg='#09f' type='submit'>
-                Sign Up
-              </Button>
-            </Center>
+              <Center mt='4'>
+                <Button type='submit' bg='#09f' _hover={{ background: '#06f' }}>
+                  Sign Up
+                </Button>
+              </Center>
+            </form>
           </FormControl>
         </Card>
       </Center>

@@ -6,9 +6,21 @@ export default async function handleUser(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const { name, email, image, role } = JSON.parse(req.body)
-  if (req.method === 'GET') {
+  const { name, email, image, role, password } =
+    req.body !== '' && JSON.parse(req.body)
+  const { type = 'many' } = req.query
+
+  if (req.method === 'GET' && type === 'many') {
     const user = await prisma.user.findMany()
+
+    res.json(user)
+    return
+  }
+
+  if (req.method === 'GET' && type === 'one') {
+    const user = await prisma.user.findUnique({
+      where: { email: req.query.email as string },
+    })
 
     res.json(user)
     return
@@ -16,7 +28,7 @@ export default async function handleUser(
 
   if (req.method === 'POST') {
     const user = await prisma.user.create({
-      data: { name, email, image, role },
+      data: { name, email, image, role, password },
     })
 
     res.json(user)

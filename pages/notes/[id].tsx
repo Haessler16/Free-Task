@@ -7,9 +7,31 @@ import {
   Link,
 } from '@chakra-ui/react'
 import { MainLayout } from 'layouts/main'
+import { getSession, GetSessionParams } from 'next-auth/react'
 import Head from 'next/head'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
+
+export async function getServerSideProps(
+  context: GetSessionParams | undefined,
+) {
+  const session = await getSession(context)
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: '/api/auth/signin',
+        permanent: false,
+      },
+    }
+  }
+
+  return {
+    props: {
+      session,
+    },
+  }
+}
 
 const Note = () => {
   const router = useRouter()

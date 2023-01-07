@@ -18,6 +18,7 @@ import {
 } from '@chakra-ui/react'
 import { useState } from 'react'
 import { signIn } from 'next-auth/react'
+import { hashPassword } from 'lib/bcrypt'
 
 const Signup: NextPage = () => {
   // const [name, setName] = useState('')
@@ -33,14 +34,19 @@ const Signup: NextPage = () => {
     const image = `https://avatars.dicebear.com/api/initials/${target.name.value}.svg`
     const name = target.name.value
     const email = target.email.value
+    const password = await hashPassword(target.password.value)
     const role = target.role.value
 
-    const bum = await fetch('api/user', {
-      method: 'POST',
-      body: JSON.stringify({ name, email, image, role }),
-    })
-    const res = await bum.json()
-    console.log({ name, email, image, role, res })
+    const getOne = await fetch(`api/user?type=one&email=${email}`)
+    const isUserAlReady = await getOne.json()
+
+    // const res = await fetch('api/user', {
+    //   method: 'POST',
+    //   body: JSON.stringify({ name, email, image, password, role }),
+    // })
+
+    // const data = await res.json()
+    console.log({ password, isUserAlReady })
   }
 
   // console.log({ name, email, password, role, img })
@@ -93,6 +99,7 @@ const Signup: NextPage = () => {
               <Input
                 name='name'
                 type='text'
+                required={true}
                 // onChange={(res) => setName(res.target.value)}
               />
 
@@ -100,6 +107,7 @@ const Signup: NextPage = () => {
               <Input
                 name='email'
                 type='email'
+                required={true}
                 // onChange={(res) => setEmail(res.target.value)}
               />
 
@@ -107,6 +115,7 @@ const Signup: NextPage = () => {
               <Input
                 name='password'
                 type='password'
+                required={true}
                 // onChange={(res) => setPassword(res.target.value)}
               />
 

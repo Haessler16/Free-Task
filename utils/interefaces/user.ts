@@ -6,10 +6,10 @@ export interface iUser {
   id: number
   name: string
   email: string
-  // password: string
+  password: string
   image: string
   role: tRole
-  createdAt: number
-  notes: iNotes[]
-  task: iTask[]
+  createdAt?: number
+  notes?: iNotes[]
+  task?: iTask[]
 }

@@ -5,8 +5,30 @@ import { iNotes } from 'utils/interefaces/notes'
 import { Grid, Button, Flex } from '@chakra-ui/react'
 import { useState } from 'react'
 import { FormToNotes } from 'components/Notes/Form'
-import { AddIcon } from '@chakra-ui/icons'
+
 import { AddButton } from 'components/AddButton'
+import { getSession, GetSessionParams } from 'next-auth/react'
+
+export async function getServerSideProps(
+  context: GetSessionParams | undefined,
+) {
+  const session = await getSession(context)
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: '/api/auth/signin',
+        permanent: false,
+      },
+    }
+  }
+
+  return {
+    props: {
+      session,
+    },
+  }
+}
 
 const data: iNotes[] = [
   {
@@ -14,24 +36,27 @@ const data: iNotes[] = [
     title: 'Tarea',
     description: 'bum',
     characters: 3,
-    created: Date.now(),
-    user: 'Tovim',
+    createdAt: Date.now(),
+    userId: 1,
+    folderId: 2,
   },
   {
     id: 2,
     title: 'task',
     description: 'fin fan fun',
     characters: 11,
-    created: Date.now(),
-    user: 'Tovim',
+    createdAt: Date.now(),
+    userId: 2,
+    folderId: 2,
   },
   {
     id: 3,
     title: 'Aja',
     description: 'katum',
     characters: 5,
-    created: Date.now(),
-    user: 'Tovim',
+    createdAt: Date.now(),
+    userId: 3,
+    folderId: 2,
   },
 ]
 

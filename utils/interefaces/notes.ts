@@ -7,6 +7,6 @@ export interface iNotes {
   description: string
   characters: number
   createdAt: number
-  user: iUser
-  folder: iFolder
+  userId: number
+  folderId: number
 }

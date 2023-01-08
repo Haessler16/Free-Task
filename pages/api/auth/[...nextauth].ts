@@ -1,5 +1,6 @@
 import NextAuth from 'next-auth'
 
+import GoogleProvider from 'next-auth/providers/google'
 import GithubProvider from 'next-auth/providers/github'
 import CredentialsProvider from 'next-auth/providers/credentials'
 
@@ -29,11 +30,14 @@ export const authOptions = {
         // e.g. return { id: 1, name: 'J Smith', email: 'jsmith@example.com' }
         // You can also use the `req` object to obtain additional parameters
         // (i.e., the request IP address)
-        const res = await fetch(`${process.env.NEXTAUTH_URL}/api/auth/user`, {
-          method: 'POST',
-          body: JSON.stringify(credentials),
-          headers: { 'Content-Type': 'application/json' },
-        })
+        const res = await fetch(
+          `${process.env.NEXTAUTH_URL}/api/auth/credentials`,
+          {
+            method: 'POST',
+            body: JSON.stringify(credentials),
+            headers: { 'Content-Type': 'application/json' },
+          },
+        )
 
         const user = await res.json()
 
@@ -57,10 +61,10 @@ export const authOptions = {
     //   clientSecret: process.env.FACEBOOK_SECRET,
     // }),
 
-    // GoogleProvider({
-    //   clientId: process.env.GOOGLE_ID,
-    //   clientSecret: process.env.GOOGLE_SECRET,
-    // }),
+    GoogleProvider({
+      clientId: process.env.GOOGLE_ID!,
+      clientSecret: process.env.GOOGLE_SECRET!,
+    }),
 
     // Passwordless / email sign in
     // EmailProvider({

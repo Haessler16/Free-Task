@@ -20,7 +20,7 @@ export async function getServerSideProps(
   if (!session) {
     return {
       redirect: {
-        destination: '/api/auth/signin',
+        destination: '/',
         permanent: false,
       },
     }

@@ -1,5 +1,27 @@
 import { MainLayout } from 'layouts/main'
+import { getSession, GetSessionParams } from 'next-auth/react'
 import Head from 'next/head'
+
+export async function getServerSideProps(
+  context: GetSessionParams | undefined,
+) {
+  const session = await getSession(context)
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false,
+      },
+    }
+  }
+
+  return {
+    props: {
+      session,
+    },
+  }
+}
 
 const Task = () => {
   return (

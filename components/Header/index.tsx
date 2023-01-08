@@ -10,10 +10,12 @@ import {
   MenuList,
   MenuItem,
   Text,
+  Flex,
 } from '@chakra-ui/react'
 import { MoonIcon, SunIcon, HamburgerIcon } from '@chakra-ui/icons'
 
 import { useMediaQuery } from '@chakra-ui/react'
+import { signOut } from 'next-auth/react'
 
 export const Header = () => {
   const { colorMode, toggleColorMode } = useColorMode()
@@ -34,7 +36,7 @@ export const Header = () => {
       <Heading>Free Task</Heading>
 
       {!isLessThan800 && (
-        <>
+        <Flex gap='4' alignItems='center'>
           <Link as={NextLink} href='/notes' fontSize='lg' fontWeight='bold'>
             Notes
           </Link>
@@ -49,7 +51,13 @@ export const Header = () => {
             boxShadow='2xl'>
             {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
           </Button>
-        </>
+          <Button
+            onClick={() => signOut()}
+            background='whiteAlpha.400'
+            boxShadow='2xl'>
+            Sign out
+          </Button>
+        </Flex>
       )}
 
       {isLessThan800 && (

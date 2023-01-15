@@ -3,7 +3,6 @@ import Image from 'next/image'
 import {
   Button,
   chakra,
-  Heading,
   Link,
   useColorMode,
   Menu,

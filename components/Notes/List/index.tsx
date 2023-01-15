@@ -10,10 +10,12 @@ import { iNotes } from 'utils/interefaces/notes'
 export const NotesList: FC<{ note: iNotes }> = ({ note }) => {
   return (
     <Card p='4' flexDir='row' justifyContent='space-between'>
-      <Link as={NextLink} href={`/notes/${note.id}`}>
-        <Heading>{note.title}</Heading>
+      <div>
+        <Link as={NextLink} href={`/notes/${note.id}`}>
+          <Heading>{note.title}</Heading>
+        </Link>
         <Text>{note.description}</Text>
-      </Link>
+      </div>
 
       <Button size='sm' borderRadius='full' p={1}>
         <SmallCloseIcon></SmallCloseIcon>

@@ -4,9 +4,11 @@ import { FC } from 'react'
 
 export const AddButton: FC<{ handleAdd: () => void }> = ({ handleAdd }) => {
   return (
-    <Flex pos='fixed' bottom='2' right='2' justifyContent='end' width='100%'>
+    <Flex pos='fixed' bottom='4' right='3' justifyContent='end' width='100%'>
       <Button
         title='add'
+        bg='#09f'
+        _hover={{ background: '#06f' }}
         borderRadius='full'
         p='4'
         h='auto'

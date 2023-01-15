@@ -2,12 +2,13 @@ import Head from 'next/head'
 import { MainLayout } from 'layouts/main'
 import { NotesList } from 'components/Notes/List'
 import { iNotes } from 'utils/interefaces/notes'
-import { Grid, Button, Flex } from '@chakra-ui/react'
+import { Box, Button, Grid, useMediaQuery } from '@chakra-ui/react'
 import { useState } from 'react'
 import { FormToNotes } from 'components/Notes/Form'
 
 import { AddButton } from 'components/AddButton'
 import { getSession, GetSessionParams } from 'next-auth/react'
+import { AddIcon } from '@chakra-ui/icons'
 
 export async function getServerSideProps(
   context: GetSessionParams | undefined,
@@ -62,12 +63,16 @@ const data: iNotes[] = [
 
 const Notes = () => {
   const [showForm, setShowForm] = useState(false)
+  const [isLessThan800] = useMediaQuery('(max-width: 760px)', {
+    ssr: true,
+    fallback: false, // return false on the server, and re-evaluate on the client side
+  })
 
   const addNotesForm = () => {
     setShowForm(true)
   }
 
-  console.log({ showForm })
+  // console.log({ showForm })
 
   return (
     <MainLayout>
@@ -79,19 +84,28 @@ const Notes = () => {
 
       <main>
         {!showForm ? (
-          <>
+          <Box px={5}>
+            <Button
+              bg='#09f'
+              _hover={{ background: '#06f' }}
+              fontSize='lg'
+              rightIcon={<AddIcon />}
+              mb='3'
+              onClick={addNotesForm}>
+              Create
+            </Button>
+
             <Grid
               id='characters_grid'
               templateColumns='repeat(auto-fit, minmax(min(100%, 22rem), 1fr))'
-              gap={2}
-              px={5}>
+              gap={2}>
               {data.map((note) => {
                 return <NotesList key={note.id} note={note} />
               })}
             </Grid>
 
-            <AddButton handleAdd={addNotesForm} />
-          </>
+            {isLessThan800 && <AddButton handleAdd={addNotesForm} />}
+          </Box>
         ) : (
           <FormToNotes setShowForm={setShowForm} />
         )}

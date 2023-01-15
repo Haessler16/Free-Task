@@ -1,21 +1,28 @@
 import NextLink from 'next/link'
+import Image from 'next/image'
+import { useRef } from 'react'
+
 import {
   Button,
   chakra,
-  Heading,
   Link,
   useColorMode,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  Text,
+  Drawer,
+  DrawerBody,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerOverlay,
+  DrawerContent,
+  DrawerCloseButton,
   Flex,
+  useDisclosure,
 } from '@chakra-ui/react'
 import { MoonIcon, SunIcon, HamburgerIcon } from '@chakra-ui/icons'
 
 import { useMediaQuery } from '@chakra-ui/react'
 import { signOut } from 'next-auth/react'
+
+import logoNoBg from '/public/logoNoBackground.png'
 
 export const Header = () => {
   const { colorMode, toggleColorMode } = useColorMode()
@@ -23,6 +30,8 @@ export const Header = () => {
     ssr: true,
     fallback: false, // return false on the server, and re-evaluate on the client side
   })
+  const { isOpen, onOpen, onClose } = useDisclosure()
+  const btnRef = useRef(null)
 
   return (
     <chakra.header
@@ -31,9 +40,10 @@ export const Header = () => {
       alignItems='center'
       bg='#09f'
       boxShadow='lg'
-      p={3}
+      py={3}
+      px={4}
       mb={3}>
-      <Heading>Free Task</Heading>
+      <Image src={logoNoBg} alt='Free Task Icon' width={140} height={140} />
 
       {!isLessThan800 && (
         <Flex gap='4' alignItems='center'>
@@ -61,38 +71,53 @@ export const Header = () => {
       )}
 
       {isLessThan800 && (
-        <Menu>
-          <MenuButton as={Button} title='Hamburger Icon'>
+        <>
+          <Button title='Hamburger Icon' ref={btnRef} onClick={onOpen}>
             <HamburgerIcon />
-          </MenuButton>
+          </Button>
 
-          <MenuList>
-            <MenuItem>
-              <Link as={NextLink} href='/notes' fontSize='lg' fontWeight='bold'>
-                Notes
-              </Link>
-            </MenuItem>
+          <Drawer
+            isOpen={isOpen}
+            placement='right'
+            onClose={onClose}
+            finalFocusRef={btnRef}>
+            <DrawerOverlay />
+            <DrawerContent>
+              <DrawerCloseButton />
+              <DrawerHeader>Free Tasks</DrawerHeader>
 
-            <MenuItem>
-              <Link as={NextLink} href='/task' fontSize='lg' fontWeight='bold'>
-                Task
-              </Link>
-            </MenuItem>
+              <DrawerBody display='flex' flexDir='column' gap='4'>
+                <Link
+                  as={NextLink}
+                  href='/notes'
+                  fontSize='lg'
+                  fontWeight='bold'>
+                  Notes
+                </Link>
 
-            <MenuItem as='div' justifyContent='space-between'>
-              <Text fontSize='lg' fontWeight='bold'>
+                <Link
+                  as={NextLink}
+                  href='/task'
+                  fontSize='lg'
+                  fontWeight='bold'>
+                  Task
+                </Link>
+
+                {/* <MenuItem as='div' justifyContent='space-between'> */}
+                {/* <Text fontSize='lg' fontWeight='bold'>
                 Theme:
-              </Text>
+              </Text> */}
 
-              <Button
-                onClick={toggleColorMode}
-                background='whiteAlpha.400'
-                boxShadow='2xl'>
-                {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
-              </Button>
-            </MenuItem>
-          </MenuList>
-        </Menu>
+                <Button
+                  onClick={toggleColorMode}
+                  background='whiteAlpha.400'
+                  boxShadow='2xl'>
+                  {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
+                </Button>
+              </DrawerBody>
+            </DrawerContent>
+          </Drawer>
+        </>
       )}
     </chakra.header>
   )

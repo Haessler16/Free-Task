@@ -2,12 +2,7 @@ import Head from 'next/head'
 import Image from 'next/image'
 import NextLink from 'next/link'
 
-import {
-  useSession,
-  signOut,
-  GetSessionParams,
-  getSession,
-} from 'next-auth/react'
+import { GetSessionParams, getSession } from 'next-auth/react'
 
 import {
   Button,
@@ -18,7 +13,6 @@ import {
   useColorMode,
 } from '@chakra-ui/react'
 import { LandingHeader } from 'components/Header/landing'
-import { MainLayout } from 'layouts/main'
 
 import noteListPic from '/public/note_list.svg'
 import { useEffect } from 'react'
@@ -47,7 +41,6 @@ export async function getServerSideProps(
 }
 
 export default function Home() {
-  const { data: session } = useSession()
   const { colorMode } = useColorMode()
   const router = useRouter()
 

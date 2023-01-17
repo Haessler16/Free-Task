@@ -1,16 +1,40 @@
 import {
+  ArrowBackIcon,
+  CheckIcon,
+  CloseIcon,
+  EditIcon,
+  SmallCloseIcon,
+} from '@chakra-ui/icons'
+import {
   Card,
+  Center,
   Editable,
   EditableInput,
   EditablePreview,
   EditableTextarea,
-  Link,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogOverlay,
+  Button,
+  CardBody,
+  useDisclosure,
+  Flex,
+  useEditableControls,
+  ButtonGroup,
+  IconButton,
+  Text,
+  Divider,
 } from '@chakra-ui/react'
 import { MainLayout } from 'layouts/main'
 import { getSession, GetSessionParams } from 'next-auth/react'
 import Head from 'next/head'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
+import { useRef } from 'react'
+import { iNotes } from 'utils/interefaces/notes'
 
 export async function getServerSideProps(
   context: GetSessionParams | undefined,
@@ -33,9 +57,59 @@ export async function getServerSideProps(
   }
 }
 
+const data: iNotes = {
+  id: 1,
+  title: 'Tarea',
+  description: 'bum',
+  characters: 3,
+  createdAt: Date.now(),
+  userId: 1,
+  folderId: 2,
+}
+
 const Note = () => {
   const router = useRouter()
+  const { isOpen, onOpen, onClose } = useDisclosure()
+  const cancelRef = useRef(null)
+
+  const handleDelete = () => {
+    onClose()
+  }
+
   const { id } = router.query
+
+  function EditableControls() {
+    const {
+      isEditing,
+      getSubmitButtonProps,
+      getCancelButtonProps,
+      getEditButtonProps,
+    } = useEditableControls()
+
+    return isEditing ? (
+      <ButtonGroup justifyContent='center' size='sm'>
+        <IconButton
+          icon={<CheckIcon />}
+          aria-label='check'
+          {...getSubmitButtonProps()}
+        />
+        <IconButton
+          icon={<CloseIcon />}
+          aria-label='close'
+          {...getCancelButtonProps()}
+        />
+      </ButtonGroup>
+    ) : (
+      <Flex justifyContent='center'>
+        <IconButton
+          aria-label='edit'
+          size='sm'
+          icon={<EditIcon />}
+          {...getEditButtonProps()}
+        />
+      </Flex>
+    )
+  }
 
   return (
     <MainLayout>
@@ -46,20 +120,93 @@ const Note = () => {
       </Head>
 
       <main style={{ padding: '0px 1.25rem' }}>
-        <Card px={5}>
-          <Link as={NextLink} href='/notes'>
+        <Flex justifyContent='space-between' alignItems='center'>
+          <Button
+            title='go back'
+            as={NextLink}
+            href='/notes'
+            bg='orange.300'
+            _hover={{ background: 'orange.500' }}
+            leftIcon={<ArrowBackIcon />}>
             Go back
-          </Link>
-          Note {id}
-          <Editable defaultValue='Take some chakra'>
-            <EditablePreview />
-            <EditableInput />
-          </Editable>
-          <Editable defaultValue='Take some chakra'>
-            <EditablePreview />
-            <EditableTextarea />
-          </Editable>
-        </Card>
+          </Button>
+
+          <Button
+            title='delete'
+            bg='red.300'
+            _hover={{ background: 'red.500' }}
+            rightIcon={<SmallCloseIcon />}
+            onClick={onOpen}>
+            Delete
+          </Button>
+        </Flex>
+
+        <AlertDialog
+          isOpen={isOpen}
+          leastDestructiveRef={cancelRef}
+          onClose={onClose}>
+          <AlertDialogOverlay>
+            <AlertDialogContent>
+              <AlertDialogHeader fontSize='lg' fontWeight='bold'>
+                Delete Note
+              </AlertDialogHeader>
+
+              <AlertDialogBody>
+                Are you sure? You can&apos;t undo this action afterwards.
+              </AlertDialogBody>
+
+              <AlertDialogFooter>
+                <Button ref={cancelRef} onClick={onClose}>
+                  Cancel
+                </Button>
+                <Button colorScheme='red' onClick={handleDelete} ml={3}>
+                  Delete
+                </Button>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialogOverlay>
+        </AlertDialog>
+
+        <Center h='calc(100vh - 200px)'>
+          <Card p='6' w='clamp(270px,50%,440px)'>
+            {/* <CardHeader>
+              <Heading textAlign='center'>Create a new note</Heading>
+            </CardHeader> */}
+
+            <CardBody>
+              <Editable
+                defaultValue={data.title}
+                fontSize='3xl'
+                display='flex'
+                justifyContent='space-between'
+                alignItems='center'
+                gap='14px'>
+                <EditablePreview />
+                <EditableInput />
+                <EditableControls />
+              </Editable>
+
+              <Flex h='30px' gap='5px' align='center' ml='10px'>
+                <Text fontSize='sm'>
+                  {new Intl.DateTimeFormat('es-VE').format(data.createdAt)}
+                </Text>
+                <Divider orientation='vertical' />
+                <Text fontSize='sm'>{data.characters} characters</Text>
+              </Flex>
+
+              <Editable
+                defaultValue={data.description}
+                display='flex'
+                justifyContent='space-between'
+                alignItems='center'
+                gap='14px'>
+                <EditablePreview />
+                <EditableTextarea />
+                <EditableControls />
+              </Editable>
+            </CardBody>
+          </Card>
+        </Center>
       </main>
     </MainLayout>
   )

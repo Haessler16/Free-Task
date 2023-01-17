@@ -2,7 +2,7 @@ import Head from 'next/head'
 import { MainLayout } from 'layouts/main'
 import { NotesList } from 'components/Notes/List'
 import { iNotes } from 'utils/interefaces/notes'
-import { Box, Button, Grid, useMediaQuery } from '@chakra-ui/react'
+import { Box, Button, Text, Grid, useMediaQuery } from '@chakra-ui/react'
 import { useState } from 'react'
 import { FormToNotes } from 'components/Notes/Form'
 
@@ -59,6 +59,14 @@ const data: iNotes[] = [
     userId: 3,
     folderId: 2,
   },
+  {
+    id: 4,
+    title: 'Tam',
+    characters: 3,
+    createdAt: Date.now(),
+    userId: 3,
+    folderId: 2,
+  },
 ]
 
 const Notes = () => {
@@ -72,8 +80,6 @@ const Notes = () => {
     setShowForm(true)
   }
 
-  // console.log({ showForm })
-
   return (
     <MainLayout>
       <Head>
@@ -85,24 +91,33 @@ const Notes = () => {
       <main>
         {!showForm ? (
           <Box px={5}>
-            <Button
-              bg='#09f'
-              _hover={{ background: '#06f' }}
-              fontSize='lg'
-              rightIcon={<AddIcon />}
-              mb='3'
-              onClick={addNotesForm}>
-              Create
-            </Button>
+            {!isLessThan800 && (
+              <Button
+                bg='#09f'
+                _hover={{ background: '#06f' }}
+                color='white'
+                fontSize='lg'
+                rightIcon={<AddIcon />}
+                mb='3'
+                onClick={addNotesForm}>
+                Create
+              </Button>
+            )}
 
-            <Grid
-              id='characters_grid'
-              templateColumns='repeat(auto-fit, minmax(min(100%, 22rem), 1fr))'
-              gap={2}>
-              {data.map((note) => {
-                return <NotesList key={note.id} note={note} />
-              })}
-            </Grid>
+            {data.length > 0 ? (
+              <Grid
+                id='characters_grid'
+                templateColumns='repeat(auto-fit, minmax(min(100%, 22rem), 1fr))'
+                gap={2}>
+                {data.map((note) => {
+                  return <NotesList key={note.id} note={note} />
+                })}
+              </Grid>
+            ) : (
+              <Text textAlign='center' fontSize='lg'>
+                No Notes, try to create a new one.
+              </Text>
+            )}
 
             {isLessThan800 && <AddButton handleAdd={addNotesForm} />}
           </Box>

@@ -49,8 +49,6 @@ const Signup: NextPage = () => {
     console.log({ password, isUserAlReady })
   }
 
-  // console.log({ name, email, password, role, img })
-
   return (
     <>
       <Head>
@@ -90,54 +88,58 @@ const Signup: NextPage = () => {
           </Button> */}
         </>
       </chakra.header>
-
-      <Center h='calc(100vh - 80px)'>
-        <Card px='6' py='10' w='clamp(270px,50%, 400px)'>
-          <FormControl>
+      <main>
+        <Center h='calc(100vh - 80px)'>
+          <Card px='6' py='10' w='clamp(270px,50%, 400px)'>
             <form onSubmit={handleSubmit}>
-              <FormLabel>Name</FormLabel>
-              <Input
-                name='name'
-                type='text'
-                required={true}
-                // onChange={(res) => setName(res.target.value)}
-              />
+              <FormControl>
+                <FormLabel>Name</FormLabel>
+                <Input
+                  name='name'
+                  type='text'
+                  required={true}
+                  // onChange={(res) => setName(res.target.value)}
+                />
 
-              <FormLabel>Email address</FormLabel>
-              <Input
-                name='email'
-                type='email'
-                required={true}
-                // onChange={(res) => setEmail(res.target.value)}
-              />
+                <FormLabel>Email address</FormLabel>
+                <Input
+                  name='email'
+                  type='email'
+                  required={true}
+                  // onChange={(res) => setEmail(res.target.value)}
+                />
 
-              <FormLabel>Password</FormLabel>
-              <Input
-                name='password'
-                type='password'
-                required={true}
-                // onChange={(res) => setPassword(res.target.value)}
-              />
+                <FormLabel>Password</FormLabel>
+                <Input
+                  name='password'
+                  type='password'
+                  required={true}
+                  // onChange={(res) => setPassword(res.target.value)}
+                />
 
-              <FormLabel>Role</FormLabel>
-              <Select
-                name='role'
-                // onChange={(res) => setRole(res.target.value)}
-              >
-                <option value='admin'>Admin</option>
-                <option value='edit'>Edit</option>
-                <option value='read'>Read</option>
-              </Select>
+                <FormLabel>Role</FormLabel>
+                <Select
+                  name='role'
+                  // onChange={(res) => setRole(res.target.value)}
+                >
+                  <option value='admin'>Admin</option>
+                  <option value='edit'>Edit</option>
+                  <option value='read'>Read</option>
+                </Select>
 
-              <Center mt='4'>
-                <Button type='submit' bg='#09f' _hover={{ background: '#06f' }}>
-                  Sign Up
-                </Button>
-              </Center>
+                <Center mt='4'>
+                  <Button
+                    type='submit'
+                    bg='#09f'
+                    _hover={{ background: '#06f' }}>
+                    Sign Up
+                  </Button>
+                </Center>
+              </FormControl>
             </form>
-          </FormControl>
-        </Card>
-      </Center>
+          </Card>
+        </Center>
+      </main>
     </>
   )
 }

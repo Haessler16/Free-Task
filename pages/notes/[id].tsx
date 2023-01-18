@@ -2,8 +2,8 @@ import {
   ArrowBackIcon,
   CheckIcon,
   CloseIcon,
+  DeleteIcon,
   EditIcon,
-  SmallCloseIcon,
 } from '@chakra-ui/icons'
 import {
   Card,
@@ -27,6 +27,7 @@ import {
   IconButton,
   Text,
   Divider,
+  CardFooter,
 } from '@chakra-ui/react'
 import { MainLayout } from 'layouts/main'
 import { getSession, GetSessionParams } from 'next-auth/react'
@@ -67,48 +68,57 @@ const data: iNotes = {
   folderId: 2,
 }
 
+function EditableControls() {
+  const {
+    isEditing,
+    getSubmitButtonProps,
+    getCancelButtonProps,
+    getEditButtonProps,
+  } = useEditableControls()
+
+  return isEditing ? (
+    <ButtonGroup justifyContent='center' size='sm'>
+      <IconButton
+        icon={<CheckIcon />}
+        aria-label='check'
+        {...getSubmitButtonProps()}
+      />
+      <IconButton
+        icon={<CloseIcon />}
+        aria-label='close'
+        {...getCancelButtonProps()}
+      />
+    </ButtonGroup>
+  ) : (
+    <Flex justifyContent='center'>
+      <IconButton
+        aria-label='edit'
+        size='sm'
+        icon={<EditIcon />}
+        {...getEditButtonProps()}
+      />
+    </Flex>
+  )
+}
+
 const Note = () => {
   const router = useRouter()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const cancelRef = useRef(null)
+  const { id } = router.query
 
   const handleDelete = () => {
     onClose()
   }
 
-  const { id } = router.query
+  const handleSubmit = (e: { preventDefault: () => void; target: any }) => {
+    e.preventDefault()
 
-  function EditableControls() {
-    const {
-      isEditing,
-      getSubmitButtonProps,
-      getCancelButtonProps,
-      getEditButtonProps,
-    } = useEditableControls()
+    const title = e.target.title.value
+    const description = e.target.description.value
 
-    return isEditing ? (
-      <ButtonGroup justifyContent='center' size='sm'>
-        <IconButton
-          icon={<CheckIcon />}
-          aria-label='check'
-          {...getSubmitButtonProps()}
-        />
-        <IconButton
-          icon={<CloseIcon />}
-          aria-label='close'
-          {...getCancelButtonProps()}
-        />
-      </ButtonGroup>
-    ) : (
-      <Flex justifyContent='center'>
-        <IconButton
-          aria-label='edit'
-          size='sm'
-          icon={<EditIcon />}
-          {...getEditButtonProps()}
-        />
-      </Flex>
-    )
+    console.log({ description, title, e })
+    // console.log({ e })
   }
 
   return (
@@ -135,7 +145,7 @@ const Note = () => {
             title='delete'
             bg='red.300'
             _hover={{ background: 'red.500' }}
-            rightIcon={<SmallCloseIcon />}
+            rightIcon={<DeleteIcon />}
             onClick={onOpen}>
             Delete
           </Button>
@@ -172,39 +182,46 @@ const Note = () => {
             {/* <CardHeader>
               <Heading textAlign='center'>Create a new note</Heading>
             </CardHeader> */}
+            <form onSubmit={handleSubmit}>
+              <CardBody>
+                <Editable
+                  defaultValue={data.title}
+                  fontSize='3xl'
+                  display='flex'
+                  justifyContent='space-between'
+                  alignItems='center'
+                  gap='14px'>
+                  <EditablePreview />
+                  <EditableInput name='title' />
+                  <EditableControls />
+                </Editable>
 
-            <CardBody>
-              <Editable
-                defaultValue={data.title}
-                fontSize='3xl'
-                display='flex'
-                justifyContent='space-between'
-                alignItems='center'
-                gap='14px'>
-                <EditablePreview />
-                <EditableInput />
-                <EditableControls />
-              </Editable>
+                <Flex h='30px' gap='5px' align='center' ml='10px'>
+                  <Text fontSize='sm'>
+                    {new Intl.DateTimeFormat('es-VE').format(data.createdAt)}
+                  </Text>
+                  <Divider orientation='vertical' />
+                  <Text fontSize='sm'>{data.characters} characters</Text>
+                </Flex>
 
-              <Flex h='30px' gap='5px' align='center' ml='10px'>
-                <Text fontSize='sm'>
-                  {new Intl.DateTimeFormat('es-VE').format(data.createdAt)}
-                </Text>
-                <Divider orientation='vertical' />
-                <Text fontSize='sm'>{data.characters} characters</Text>
-              </Flex>
+                <Editable
+                  defaultValue={data.description}
+                  display='flex'
+                  justifyContent='space-between'
+                  alignItems='center'
+                  gap='14px'>
+                  <EditablePreview />
+                  <EditableTextarea name='description' />
+                  <EditableControls />
+                </Editable>
+              </CardBody>
 
-              <Editable
-                defaultValue={data.description}
-                display='flex'
-                justifyContent='space-between'
-                alignItems='center'
-                gap='14px'>
-                <EditablePreview />
-                <EditableTextarea />
-                <EditableControls />
-              </Editable>
-            </CardBody>
+              <CardFooter justify='end' p={2}>
+                <Button variant='solid' colorScheme='blue' type='submit'>
+                  Done
+                </Button>
+              </CardFooter>
+            </form>
           </Card>
         </Center>
       </main>

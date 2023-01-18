@@ -2,13 +2,14 @@ import Head from 'next/head'
 import { MainLayout } from 'layouts/main'
 import { NotesList } from 'components/Notes/List'
 import { iNotes } from 'utils/interefaces/notes'
-import { Box, Button, Text, Grid, useMediaQuery } from '@chakra-ui/react'
+import { Box, Button, Text, Grid, useMediaQuery, Flex } from '@chakra-ui/react'
 import { useState } from 'react'
 import { FormToNotes } from 'components/Notes/Form'
 
 import { AddButton } from 'components/AddButton'
 import { getSession, GetSessionParams } from 'next-auth/react'
 import { AddIcon } from '@chakra-ui/icons'
+import { Folders } from 'components/Folders'
 
 export async function getServerSideProps(
   context: GetSessionParams | undefined,
@@ -91,18 +92,25 @@ const Notes = () => {
       <main>
         {!showForm ? (
           <Box px={5}>
-            {!isLessThan800 && (
-              <Button
-                bg='#09f'
-                _hover={{ background: '#06f' }}
-                color='white'
-                fontSize='lg'
-                rightIcon={<AddIcon />}
-                mb='3'
-                onClick={addNotesForm}>
-                Create
-              </Button>
-            )}
+            <Flex
+              justify={isLessThan800 ? 'end' : 'space-between'}
+              align='center'
+              mb='3'>
+              {!isLessThan800 && (
+                <>
+                  <Button
+                    bg='#09f'
+                    _hover={{ background: '#06f' }}
+                    color='white'
+                    fontSize='lg'
+                    rightIcon={<AddIcon />}
+                    onClick={addNotesForm}>
+                    Create
+                  </Button>
+                </>
+              )}
+              <Folders />
+            </Flex>
 
             {data.length > 0 ? (
               <Grid

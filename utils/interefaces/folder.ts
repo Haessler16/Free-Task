@@ -1,7 +1,7 @@
 import { iNotes } from './notes'
 
 export interface iFolder {
-  id: string
+  id: number
   title: string
   notes: iNotes[]
 }

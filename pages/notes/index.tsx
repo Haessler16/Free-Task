@@ -25,10 +25,10 @@ export async function getServerSideProps(
     }
   }
 
+  console.log({ session })
+
   return {
-    props: {
-      session,
-    },
+    props: { session },
   }
 }
 
@@ -81,6 +81,7 @@ const Notes = () => {
     setShowForm(true)
   }
 
+  // console.log({ props })
   return (
     <MainLayout>
       <Head>

@@ -1,4 +1,5 @@
 import NextAuth from 'next-auth'
+import { AuthOptions } from 'next-auth'
 
 import GoogleProvider from 'next-auth/providers/google'
 import GithubProvider from 'next-auth/providers/github'
@@ -6,6 +7,7 @@ import CredentialsProvider from 'next-auth/providers/credentials'
 
 export const authOptions = {
   // Configure one or more authentication providers
+
   providers: [
     CredentialsProvider({
       // The name to display on the sign in form (e.g. 'Sign in with...')
@@ -72,5 +74,32 @@ export const authOptions = {
     //   from: 'NextAuth.js <no-reply@example.com>',
     // }),
   ],
+  callbacks: {
+    async jwt({ token, account }: any) {
+      // Persist the OAuth access_token and or the user id to the token right after signin
+
+      if (account) {
+        token.provider = account.provider
+      }
+      // console.log({ token, account, profile })
+      return token
+    },
+    async session({ session, token }: any) {
+      // Send properties to the client, like an access_token and user id from a provider.
+
+      if (session.user) {
+        const getOne = await fetch(
+          `${process.env.NEXTAUTH_URL}/api/user?type=one&email=${session.user.email}`,
+        )
+        const oneUser = await getOne.json()
+        // console.log({ us: session.user, pro: token.provider, oneUser })
+        session.user.provider = token.provider
+        session.user.id = oneUser.id
+        session.user.role = oneUser.role
+      }
+
+      return session
+    },
+  },
 }
 export default NextAuth(authOptions)

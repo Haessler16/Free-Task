@@ -16,11 +16,20 @@ import {
   DrawerContent,
   DrawerCloseButton,
   Flex,
+  Avatar,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  MenuItemOption,
+  MenuGroup,
+  MenuOptionGroup,
+  MenuDivider,
 } from '@chakra-ui/react'
 import { useMediaQuery, useDisclosure } from '@chakra-ui/react'
 import { MoonIcon, SunIcon, HamburgerIcon } from '@chakra-ui/icons'
 
-import { signOut } from 'next-auth/react'
+import { signOut, useSession } from 'next-auth/react'
 
 import logoNoBg from '/public/logoNoBackground.png'
 
@@ -33,6 +42,13 @@ export const Header = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const btnRef = useRef(null)
   const router = useRouter()
+  const { data: session } = useSession()
+
+  if (!session) {
+    return <h1>none</h1>
+  }
+
+  // console.log({ session })
 
   return (
     <chakra.header
@@ -84,12 +100,24 @@ export const Header = () => {
             boxShadow='2xl'>
             {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
           </Button>
-          <Button
-            onClick={() => signOut()}
-            background='whiteAlpha.400'
-            boxShadow='2xl'>
-            Sign out
-          </Button>
+
+          <Menu>
+            <MenuButton>
+              <Avatar
+                name={session.user?.name ?? undefined}
+                src={session.user?.image ?? undefined}
+              />
+            </MenuButton>
+
+            <MenuList>
+              {/* <MenuItem>Download</MenuItem>
+              <MenuItem>Create a Copy</MenuItem>
+              <MenuItem>Mark as Draft</MenuItem> */}
+              <MenuItem>Manage User</MenuItem>
+              <MenuDivider />
+              <MenuItem onClick={() => signOut()}>Sign out</MenuItem>
+            </MenuList>
+          </Menu>
         </Flex>
       )}
 

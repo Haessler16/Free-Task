@@ -1,10 +1,10 @@
-import {
-  ArrowBackIcon,
-  CheckIcon,
-  CloseIcon,
-  DeleteIcon,
-  EditIcon,
-} from '@chakra-ui/icons'
+import { GetServerSidePropsContext } from 'next'
+import { getSession } from 'next-auth/react'
+import Head from 'next/head'
+import NextLink from 'next/link'
+
+// import { useRef } from 'react'
+
 import {
   Card,
   Center,
@@ -12,12 +12,12 @@ import {
   EditableInput,
   EditablePreview,
   EditableTextarea,
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogOverlay,
+  // AlertDialog,
+  // AlertDialogBody,
+  // AlertDialogContent,
+  // AlertDialogFooter,
+  // AlertDialogHeader,
+  // AlertDialogOverlay,
   Button,
   CardBody,
   useDisclosure,
@@ -29,18 +29,19 @@ import {
   Divider,
   CardFooter,
 } from '@chakra-ui/react'
+
+import { ArrowBackIcon, CheckIcon, CloseIcon, EditIcon } from '@chakra-ui/icons'
+
+import { DeleteButton } from 'components/common/Button/Delete'
 import { MainLayout } from 'layouts/main'
-import { getSession, GetSessionParams } from 'next-auth/react'
-import Head from 'next/head'
-import NextLink from 'next/link'
-import { useRouter } from 'next/router'
-import { useRef } from 'react'
+
 import { iNotes } from 'utils/interefaces/notes'
 
-export async function getServerSideProps(
-  context: GetSessionParams | undefined,
-) {
+export async function getServerSideProps(context: GetServerSidePropsContext) {
   const session = await getSession(context)
+  const {
+    query: { id },
+  } = context
 
   if (!session) {
     return {
@@ -102,14 +103,12 @@ function EditableControls() {
 }
 
 const Note = () => {
-  const router = useRouter()
-  const { isOpen, onOpen, onClose } = useDisclosure()
-  const cancelRef = useRef(null)
-  const { id } = router.query
+  // const { isOpen, onOpen, onClose } = useDisclosure()
+  // const cancelRef = useRef(null)
 
-  const handleDelete = () => {
-    onClose()
-  }
+  // const handleDelete = () => {
+  //   onClose()
+  // }
 
   const handleSubmit = (e: { preventDefault: () => void; target: any }) => {
     e.preventDefault()
@@ -141,17 +140,10 @@ const Note = () => {
             Go back
           </Button>
 
-          <Button
-            title='delete'
-            bg='red.300'
-            _hover={{ background: 'red.500' }}
-            rightIcon={<DeleteIcon />}
-            onClick={onOpen}>
-            Delete
-          </Button>
+          <DeleteButton />
         </Flex>
 
-        <AlertDialog
+        {/* <AlertDialog
           isOpen={isOpen}
           leastDestructiveRef={cancelRef}
           onClose={onClose}>
@@ -175,7 +167,7 @@ const Note = () => {
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialogOverlay>
-        </AlertDialog>
+        </AlertDialog> */}
 
         <Center h='calc(100vh - 200px)'>
           <Card p='6' w='clamp(270px,50%,440px)'>

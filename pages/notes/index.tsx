@@ -10,6 +10,8 @@ import { AddButton } from 'components/AddButton'
 import { getSession, GetSessionParams } from 'next-auth/react'
 import { AddIcon } from '@chakra-ui/icons'
 import { Folders } from 'components/Folders'
+import { PrismaClient } from '@prisma/client'
+import { NextPage } from 'next'
 
 export async function getServerSideProps(
   context: GetSessionParams | undefined,
@@ -25,10 +27,13 @@ export async function getServerSideProps(
     }
   }
 
-  console.log({ session })
+  const prisma = new PrismaClient()
+  const notes = await prisma.notes.findMany()
+
+  // console.log({ notes })
 
   return {
-    props: { session },
+    props: { session, notes },
   }
 }
 
@@ -70,7 +75,7 @@ const data: iNotes[] = [
   },
 ]
 
-const Notes = () => {
+const Notes: NextPage<{ notes: any[] }> = ({ notes }) => {
   const [showForm, setShowForm] = useState(false)
   const [isLessThan800] = useMediaQuery('(max-width: 760px)', {
     ssr: true,
@@ -81,7 +86,7 @@ const Notes = () => {
     setShowForm(true)
   }
 
-  // console.log({ props })
+  console.log({ notes })
   return (
     <MainLayout>
       <Head>

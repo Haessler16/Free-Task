@@ -8,6 +8,7 @@ export interface iUser {
   email: string
   password: string
   image: string
+  provider?: string
   role: tRole
   createdAt?: number
   notes?: iNotes[]

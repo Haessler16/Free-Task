@@ -6,49 +6,49 @@ export default async function handleUser(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const { id, name, email, image, role, password } =
+  const { id, title, description, characters, user } =
     req.body !== '' && JSON.parse(req.body)
   const { type = 'many' } = req.query
 
   if (req.method === 'GET' && type === 'many') {
-    const user = await prisma.user.findMany()
+    const notes = await prisma.notes.findMany()
 
-    res.json(user)
+    res.json(notes)
     return
   }
 
   if (req.method === 'GET' && type === 'one') {
-    const user = await prisma.user.findUnique({
-      where: { email: req.query.email as string },
+    const notes = await prisma.notes.findUnique({
+      where: { id },
     })
 
-    res.json(user)
+    res.json(notes)
     return
   }
 
   if (req.method === 'POST') {
-    const user = await prisma.user.create({
-      data: { name, email, image, role, password },
+    const notes = await prisma.notes.create({
+      data: { title, description, characters, user },
     })
 
-    res.json(user)
+    res.json(notes)
     return
   }
 
   if (req.method === 'UPDATE') {
-    const user = await prisma.user.update({
+    const notes = await prisma.notes.update({
       where: { id: id },
-      data: { name, email, image, role },
+      data: { title, description, characters, user },
     })
 
-    res.json(user)
+    res.json(notes)
     return
   }
 
   if (req.method === 'DELETE') {
-    const user = await prisma.user.delete({ where: { id: id } })
+    const notes = await prisma.notes.delete({ where: { id: id } })
 
-    res.json(user)
+    res.json(notes)
     return
   }
 }

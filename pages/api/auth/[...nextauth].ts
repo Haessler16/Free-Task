@@ -88,14 +88,21 @@ export const authOptions = {
       // Send properties to the client, like an access_token and user id from a provider.
 
       if (session.user) {
+        session.user.provider = token.provider
         const getOne = await fetch(
           `${process.env.NEXTAUTH_URL}/api/user?type=one&email=${session.user.email}`,
         )
         const oneUser = await getOne.json()
-        // console.log({ us: session.user, pro: token.provider, oneUser })
-        session.user.provider = token.provider
-        session.user.id = oneUser.id
-        session.user.role = oneUser.role
+
+        if (session.user.provider !== 'credentials' && oneUser === null) {
+          console.log({ us: session.user, pro: token.provider, oneUser })
+          // const res = await fetch('api/user', {
+          //   method: 'POST',
+          //   body: JSON.stringify({ name, email, image, password, role }),
+          // })
+        }
+        session.user.id = oneUser?.id
+        session.user.role = oneUser?.role
       }
 
       return session

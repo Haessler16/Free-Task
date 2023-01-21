@@ -21,9 +21,6 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
-  MenuItemOption,
-  MenuGroup,
-  MenuOptionGroup,
   MenuDivider,
 } from '@chakra-ui/react'
 import { useMediaQuery, useDisclosure } from '@chakra-ui/react'
@@ -32,6 +29,8 @@ import { MoonIcon, SunIcon, HamburgerIcon } from '@chakra-ui/icons'
 import { signOut, useSession } from 'next-auth/react'
 
 import logoNoBg from '/public/logoNoBackground.png'
+import { ManageUser } from './ManageUser'
+import { iUser } from 'utils/interefaces/user'
 
 export const Header = () => {
   const { colorMode, toggleColorMode } = useColorMode()
@@ -40,6 +39,7 @@ export const Header = () => {
     fallback: false, // return false on the server, and re-evaluate on the client side
   })
   const { isOpen, onOpen, onClose } = useDisclosure()
+
   const btnRef = useRef(null)
   const router = useRouter()
   const { data: session } = useSession()
@@ -110,11 +110,10 @@ export const Header = () => {
             </MenuButton>
 
             <MenuList>
-              {/* <MenuItem>Download</MenuItem>
-              <MenuItem>Create a Copy</MenuItem>
-              <MenuItem>Mark as Draft</MenuItem> */}
-              <MenuItem>Manage User</MenuItem>
+              <ManageUser user={session.user as iUser} />
+
               <MenuDivider />
+
               <MenuItem onClick={() => signOut()}>Sign out</MenuItem>
             </MenuList>
           </Menu>

@@ -14,12 +14,12 @@ import {
 import { DeleteButton } from 'components/common/Button/Delete'
 
 import { FC } from 'react'
-import { iUser } from 'utils/interefaces/user'
+import { iUser } from 'utils/interfaces/user'
 
 export const ManageUser: FC<{ user: iUser }> = ({ user }) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
 
-  console.log({ user })
+  // console.log({ user })
   // if(!session){
   //   return <p>no session</p>
   // }
@@ -37,8 +37,9 @@ export const ManageUser: FC<{ user: iUser }> = ({ user }) => {
           <ModalBody>
             <HStack justify='space-between'>
               <Avatar name={user.name} src={user.image} />
-              <DeleteButton />
+              <DeleteButton title='User' id={user.id} deleteUrl='/api/user' />
             </HStack>
+
             <Text>Name: {user.name}</Text>
             <Text>Email: {user.email}</Text>
             <Text>Role: {user.role}</Text>

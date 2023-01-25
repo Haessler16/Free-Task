@@ -14,23 +14,44 @@ import {
 } from '@chakra-ui/react'
 import { ArrowBackIcon } from '@chakra-ui/icons'
 
+import { iUser } from 'utils/interfaces/user'
+import { mutate } from 'swr'
+
 interface iFormToNotes {
   setShowForm: (state: boolean) => void
+  user: iUser
 }
 
-export const FormToNotes: FC<iFormToNotes> = ({ setShowForm }) => {
+export const FormToNotes: FC<iFormToNotes> = ({ setShowForm, user }) => {
   const [savingData, setSavingData] = useState(false)
 
-  const handleSubmit = (e: { preventDefault?: any; target?: any }) => {
+  const handleSubmit = async (e: { preventDefault?: any; target?: any }) => {
     setSavingData(true)
     e.preventDefault()
 
     const { target } = e
-    const title = target.title.value
-    const description = target.description.value
+    const title: string = target.title.value
+    const description: string = target.description.value
+    const characters: number = title.concat(description).length
 
-    console.log({ title, description })
-    setSavingData(false)
+    if (user) {
+      const createdNote = await fetch(`api/notes`, {
+        method: 'POST',
+        body: JSON.stringify({
+          title,
+          userId: user.id,
+          description,
+          characters,
+        }),
+      })
+
+      const note = await createdNote.json()
+      if (note) {
+        setSavingData(false)
+        mutate(`/api/notes?userId=${user.id}`)
+        setShowForm(false)
+      }
+    }
   }
 
   return (

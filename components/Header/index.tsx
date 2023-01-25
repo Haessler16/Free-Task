@@ -30,7 +30,7 @@ import { signOut, useSession } from 'next-auth/react'
 
 import logoNoBg from '/public/logoNoBackground.png'
 import { ManageUser } from './ManageUser'
-import { iUser } from 'utils/interefaces/user'
+import { iUser } from 'utils/interfaces/user'
 
 export const Header = () => {
   const { colorMode, toggleColorMode } = useColorMode()

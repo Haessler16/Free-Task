@@ -35,7 +35,7 @@ import { ArrowBackIcon, CheckIcon, CloseIcon, EditIcon } from '@chakra-ui/icons'
 import { DeleteButton } from 'components/common/Button/Delete'
 import { MainLayout } from 'layouts/main'
 
-import { iNotes } from 'utils/interefaces/notes'
+import { iNotes } from 'utils/interfaces/notes'
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const session = await getSession(context)
@@ -140,7 +140,7 @@ const Note = () => {
             Go back
           </Button>
 
-          <DeleteButton />
+          <DeleteButton title='Notes' id={data.id} />
         </Flex>
 
         {/* <AlertDialog

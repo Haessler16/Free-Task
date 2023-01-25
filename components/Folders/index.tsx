@@ -3,12 +3,6 @@ import {
   Flex,
   Tag,
   TagLabel,
-  Drawer,
-  DrawerBody,
-  DrawerHeader,
-  DrawerOverlay,
-  DrawerContent,
-  DrawerCloseButton,
   useDisclosure,
   Button,
   Modal,
@@ -18,74 +12,91 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
+  ListItem,
+  List
 } from '@chakra-ui/react'
-import { iFolder } from 'utils/interefaces/folder'
+import { useEffect, useState } from 'react'
+import { iFolder } from 'utils/interfaces/folder'
 
 const folders: iFolder[] = [
   {
     id: 1,
     title: 'All',
     notes: [],
+    selected: true,
   },
   {
     id: 2,
     title: 'Uncategorised',
     notes: [],
+    selected: false,
   },
   {
     id: 3,
     title: 'Dev',
     notes: [],
+    selected: false,
   },
 ]
+
 export const Folders = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
+  const [folderSelected, setFolderSelected] = useState('All')
+
+  const selectFolder = (title: string) => {
+    setFolderSelected(title)
+  }
+
+  useEffect(() => {
+    const bum = folders.splice(1, 1)
+    folders.push(bum[0])
+  }, [])
+
   return (
     <Flex gap='5px'>
       {folders.map((folder) => {
         return (
           <div key={folder.id}>
-            <Tag size='lg' key={folder.id} variant='subtle'>
+            <Tag
+              size='lg'
+              key={folder.id}
+              variant={folderSelected === folder.title ? 'solid' : 'subtle'}
+              cursor='pointer'
+              onClick={() => selectFolder(folder.title)}>
               <TagLabel>{folder.title}</TagLabel>
             </Tag>
           </div>
         )
       })}
+
       <Tag
         size='lg'
         key='folder'
-        variant='solid'
+        variant='outline'
         colorScheme='cyan'
         cursor='pointer'
         onClick={onOpen}>
         <CalendarIcon />
       </Tag>
 
-      {/* <Drawer onClose={onClose} isOpen={isOpen} size='md'>
-        <DrawerOverlay />
-        <DrawerContent>
-          <DrawerCloseButton />
-          <DrawerHeader>Folders</DrawerHeader>
-          <DrawerBody>
-            <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua.
-              Consequat nisl vel pretium lectus quam id. Semper quis lectus
-              nulla at volutpat diam ut venenatis. Dolor morbi non arcu risus
-              quis varius quam quisque. Massa ultricies mi quis hendrerit dolor
-              magna eget est lorem. Erat imperdiet sed euismod nisi porta.
-              Lectus vestibulum mattis ullamcorper velit.
-            </p>
-          </DrawerBody>
-        </DrawerContent>
-      </Drawer> */}
+      
 
       <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
+        <ModalOverlay filter='auto' blur='2px' />
         <ModalContent>
-          <ModalHeader>Modal Title</ModalHeader>
+          <ModalHeader>Manage Folders</ModalHeader>
           <ModalCloseButton />
-          <ModalBody>bum</ModalBody>
+          <ModalBody>
+          {folders.map((folder) => {
+            return <List key={folder.id} spacing={4} bg="blackAlpha.300" p={1} borderRadius="lg">
+            <ListItem>
+              
+              {folder.title}
+            </ListItem>
+            
+          </List>
+          })}
+            </ModalBody>
 
           <ModalFooter>
             <Button colorScheme='blue' mr={3} onClick={onClose}>

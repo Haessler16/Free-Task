@@ -15,17 +15,22 @@ import {
   chakra,
   Heading,
   Link,
+  CardBody,
+  CardFooter,
+  Text,
 } from '@chakra-ui/react'
 import { useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { hashPassword } from 'lib/bcrypt'
+import { useRouter } from 'next/router'
 
 const Signup: NextPage = () => {
   // const [name, setName] = useState('')
   // const [email, setEmail] = useState('')
+  const router = useRouter()
   // const [password, setPassword] = useState('')
-  // const [role, setRole] = useState('admin')
-  const [img, setImg] = useState('')
+  const [allReadyUser, setAllReadyUser] = useState(false)
+  // const [img, setImg] = useState('')
 
   const handleSubmit = async (e: { preventDefault?: any; target: any }) => {
     e.preventDefault()
@@ -40,13 +45,21 @@ const Signup: NextPage = () => {
     const getOne = await fetch(`api/user?type=one&email=${email}`)
     const isUserAlReady = await getOne.json()
 
-    // const res = await fetch('api/user', {
-    //   method: 'POST',
-    //   body: JSON.stringify({ name, email, image, password, role }),
-    // })
+    console.log({ isUserAlReady })
+    if (!isUserAlReady) {
+      const res = await fetch('api/user', {
+        method: 'POST',
+        body: JSON.stringify({ name, email, image, password, role }),
+      })
 
-    // const data = await res.json()
-    console.log({ password, isUserAlReady })
+      const data = await res.json()
+      if (data) {
+        console.log({ data })
+        router.push('/notes')
+      }
+    } else {
+      setAllReadyUser(true)
+    }
   }
 
   return (
@@ -88,55 +101,63 @@ const Signup: NextPage = () => {
           </Button> */}
         </>
       </chakra.header>
+
       <main>
         <Center h='calc(100vh - 80px)'>
           <Card px='6' py='10' w='clamp(270px,50%, 400px)'>
-            <form onSubmit={handleSubmit}>
-              <FormControl>
-                <FormLabel>Name</FormLabel>
-                <Input
-                  name='name'
-                  type='text'
-                  required={true}
-                  // onChange={(res) => setName(res.target.value)}
-                />
+            <CardBody>
+              <form onSubmit={handleSubmit}>
+                <FormControl>
+                  <FormLabel>Name</FormLabel>
+                  <Input
+                    name='name'
+                    type='text'
+                    required={true}
+                    // onChange={(res) => setName(res.target.value)}
+                  />
 
-                <FormLabel>Email address</FormLabel>
-                <Input
-                  name='email'
-                  type='email'
-                  required={true}
-                  // onChange={(res) => setEmail(res.target.value)}
-                />
+                  <FormLabel>Email address</FormLabel>
+                  <Input
+                    name='email'
+                    type='email'
+                    required={true}
+                    // onChange={(res) => setEmail(res.target.value)}
+                  />
 
-                <FormLabel>Password</FormLabel>
-                <Input
-                  name='password'
-                  type='password'
-                  required={true}
-                  // onChange={(res) => setPassword(res.target.value)}
-                />
+                  <FormLabel>Password</FormLabel>
+                  <Input
+                    name='password'
+                    type='password'
+                    required={true}
+                    // onChange={(res) => setPassword(res.target.value)}
+                  />
 
-                <FormLabel>Role</FormLabel>
-                <Select
-                  name='role'
-                  // onChange={(res) => setRole(res.target.value)}
-                >
-                  <option value='admin'>Admin</option>
-                  <option value='edit'>Edit</option>
-                  <option value='read'>Read</option>
-                </Select>
+                  <FormLabel>Role</FormLabel>
+                  <Select
+                    name='role'
+                    // onChange={(res) => setRole(res.target.value)}
+                  >
+                    <option value='admin'>Admin</option>
+                    <option value='edit'>Edit</option>
+                    <option value='read'>Read</option>
+                  </Select>
 
-                <Center mt='4'>
-                  <Button
-                    type='submit'
-                    bg='#09f'
-                    _hover={{ background: '#06f' }}>
-                    Sign Up
-                  </Button>
-                </Center>
-              </FormControl>
-            </form>
+                  <Center mt='4'>
+                    <Button
+                      type='submit'
+                      bg='#09f'
+                      _hover={{ background: '#06f' }}>
+                      Sign Up
+                    </Button>
+                  </Center>
+                </FormControl>
+              </form>
+            </CardBody>
+            {allReadyUser && (
+              <CardFooter>
+                <Text color='red'>That user is all ready registered</Text>
+              </CardFooter>
+            )}
           </Card>
         </Center>
       </main>

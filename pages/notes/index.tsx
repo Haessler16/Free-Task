@@ -1,17 +1,28 @@
 import Head from 'next/head'
 import { MainLayout } from 'layouts/main'
 import { NotesList } from 'components/Notes/List'
-import { iNotes } from 'utils/interefaces/notes'
-import { Box, Button, Text, Grid, useMediaQuery, Flex } from '@chakra-ui/react'
+import { iNotes } from 'utils/interfaces/notes'
+import {
+  Box,
+  Text,
+  Grid,
+  useMediaQuery,
+  Spinner,
+  Center,
+} from '@chakra-ui/react'
 import { useState } from 'react'
 import { FormToNotes } from 'components/Notes/Form'
 
 import { AddButton } from 'components/AddButton'
-import { getSession, GetSessionParams } from 'next-auth/react'
-import { AddIcon } from '@chakra-ui/icons'
-import { Folders } from 'components/Folders'
+import { getSession, GetSessionParams, useSession } from 'next-auth/react'
+
 import { PrismaClient } from '@prisma/client'
 import { NextPage } from 'next'
+import { NotesHeader } from 'components/Notes/Header'
+import { iUser } from 'utils/interfaces/user'
+
+import useSWR from 'swr'
+import fetcher from 'utils/fetcher'
 
 export async function getServerSideProps(
   context: GetSessionParams | undefined,
@@ -26,56 +37,33 @@ export async function getServerSideProps(
       },
     }
   }
+  const user = session.user as iUser
 
   const prisma = new PrismaClient()
-  const notes = await prisma.notes.findMany()
-
-  // console.log({ notes })
+  const notes = await prisma.notes.findMany({
+    where: {
+      userId: user.id,
+    },
+  })
 
   return {
-    props: { session, notes },
+    props: {
+      notes: JSON.parse(JSON.stringify(notes)),
+    },
   }
 }
 
-const data: iNotes[] = [
-  {
-    id: 1,
-    title: 'Tarea',
-    description: 'bum',
-    characters: 3,
-    createdAt: Date.now(),
-    userId: 1,
-    folderId: 2,
-  },
-  {
-    id: 2,
-    title: 'task',
-    description: 'fin fan fun',
-    characters: 11,
-    createdAt: Date.now(),
-    userId: 2,
-    folderId: 2,
-  },
-  {
-    id: 3,
-    title: 'Aja',
-    description: 'katum',
-    characters: 5,
-    createdAt: Date.now(),
-    userId: 3,
-    folderId: 2,
-  },
-  {
-    id: 4,
-    title: 'Tam',
-    characters: 3,
-    createdAt: Date.now(),
-    userId: 3,
-    folderId: 2,
-  },
-]
+const Notes: NextPage<{ notes: iNotes[] }> = ({ notes }) => {
+  const { data: session } = useSession()
 
-const Notes: NextPage<{ notes: any[] }> = ({ notes }) => {
+  const { data } = useSWR<iNotes[]>(
+    session ? `/api/notes?userId=${(session?.user as iUser).id}` : null,
+    fetcher,
+    {
+      fallbackData: notes,
+    },
+  )
+  
   const [showForm, setShowForm] = useState(false)
   const [isLessThan800] = useMediaQuery('(max-width: 760px)', {
     ssr: true,
@@ -86,7 +74,21 @@ const Notes: NextPage<{ notes: any[] }> = ({ notes }) => {
     setShowForm(true)
   }
 
-  console.log({ notes })
+  if (!data || !session) {
+    return (
+      <Center h="100vh">
+        <Spinner
+          thickness='4px'
+          speed='0.65s'
+          emptyColor='gray.200'
+          color='blue.500'
+          size='xl'
+        />
+      </Center>
+    )
+  }
+
+  console.log({ data })
   return (
     <MainLayout>
       <Head>
@@ -98,25 +100,10 @@ const Notes: NextPage<{ notes: any[] }> = ({ notes }) => {
       <main>
         {!showForm ? (
           <Box px={5}>
-            <Flex
-              justify={isLessThan800 ? 'end' : 'space-between'}
-              align='center'
-              mb='3'>
-              {!isLessThan800 && (
-                <>
-                  <Button
-                    bg='#09f'
-                    _hover={{ background: '#06f' }}
-                    color='white'
-                    fontSize='lg'
-                    rightIcon={<AddIcon />}
-                    onClick={addNotesForm}>
-                    Create
-                  </Button>
-                </>
-              )}
-              <Folders />
-            </Flex>
+            <NotesHeader
+              isLessThan800={isLessThan800}
+              addNotesForm={addNotesForm}
+            />
 
             {data.length > 0 ? (
               <Grid
@@ -124,7 +111,13 @@ const Notes: NextPage<{ notes: any[] }> = ({ notes }) => {
                 templateColumns='repeat(auto-fit, minmax(min(100%, 22rem), 1fr))'
                 gap={2}>
                 {data.map((note) => {
-                  return <NotesList key={note.id} note={note} />
+                  return (
+                    <NotesList
+                      key={note.id}
+                      note={note}
+                      user={session?.user as iUser}
+                    />
+                  )
                 })}
               </Grid>
             ) : (
@@ -136,7 +129,10 @@ const Notes: NextPage<{ notes: any[] }> = ({ notes }) => {
             {isLessThan800 && <AddButton handleAdd={addNotesForm} />}
           </Box>
         ) : (
-          <FormToNotes setShowForm={setShowForm} />
+          <FormToNotes
+            setShowForm={setShowForm}
+            user={session?.user as iUser}
+          />
         )}
       </main>
     </MainLayout>

@@ -1,7 +1,7 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { comparePassword } from 'lib/bcrypt'
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { iUser } from 'utils/interefaces/user'
+import { iUser } from 'utils/interfaces/user'
 
 // type Data = {
 //   name: string
@@ -26,7 +26,7 @@ export default async function CredentialsAuth(
   )
   const isUserAlReady = await getOne.json()
 
-  if (await comparePassword(password, isUserAlReady.password ?? '')) {
+  if (await comparePassword(password, isUserAlReady.password)) {
     const user: iUser = isUserAlReady
     return res.status(200).json(user)
   }

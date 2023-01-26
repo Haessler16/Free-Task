@@ -1,5 +1,5 @@
-import { GetServerSidePropsContext } from 'next'
-import { getSession } from 'next-auth/react'
+import { GetServerSidePropsContext, NextPage } from 'next'
+import { getSession, useSession } from 'next-auth/react'
 import Head from 'next/head'
 import NextLink from 'next/link'
 
@@ -12,30 +12,25 @@ import {
   EditableInput,
   EditablePreview,
   EditableTextarea,
-  // AlertDialog,
-  // AlertDialogBody,
-  // AlertDialogContent,
-  // AlertDialogFooter,
-  // AlertDialogHeader,
-  // AlertDialogOverlay,
   Button,
   CardBody,
-  useDisclosure,
   Flex,
-  useEditableControls,
-  ButtonGroup,
-  IconButton,
   Text,
   Divider,
   CardFooter,
+  Spinner,
 } from '@chakra-ui/react'
 
-import { ArrowBackIcon, CheckIcon, CloseIcon, EditIcon } from '@chakra-ui/icons'
+import { ArrowBackIcon } from '@chakra-ui/icons'
 
 import { DeleteButton } from 'components/common/Button/Delete'
 import { MainLayout } from 'layouts/main'
 
-import { iNotes } from 'utils/interfaces/notes'
+import { iNote } from 'utils/interfaces/notes'
+import { EditableControls } from 'components/common/EditableControls'
+
+import prisma from 'lib/prisma'
+import { iUser } from 'utils/interfaces/user'
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const session = await getSession(context)
@@ -52,63 +47,21 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     }
   }
 
+  const note = await prisma.notes.findUnique({
+    where: {
+      id: id ? Number(id) : undefined,
+    },
+  })
+
   return {
     props: {
-      session,
+      note: JSON.parse(JSON.stringify(note)),
     },
   }
 }
 
-const data: iNotes = {
-  id: 1,
-  title: 'Tarea',
-  description: 'bum',
-  characters: 3,
-  createdAt: Date.now(),
-  userId: 1,
-  folderId: 2,
-}
-
-function EditableControls() {
-  const {
-    isEditing,
-    getSubmitButtonProps,
-    getCancelButtonProps,
-    getEditButtonProps,
-  } = useEditableControls()
-
-  return isEditing ? (
-    <ButtonGroup justifyContent='center' size='sm'>
-      <IconButton
-        icon={<CheckIcon />}
-        aria-label='check'
-        {...getSubmitButtonProps()}
-      />
-      <IconButton
-        icon={<CloseIcon />}
-        aria-label='close'
-        {...getCancelButtonProps()}
-      />
-    </ButtonGroup>
-  ) : (
-    <Flex justifyContent='center'>
-      <IconButton
-        aria-label='edit'
-        size='sm'
-        icon={<EditIcon />}
-        {...getEditButtonProps()}
-      />
-    </Flex>
-  )
-}
-
-const Note = () => {
-  // const { isOpen, onOpen, onClose } = useDisclosure()
-  // const cancelRef = useRef(null)
-
-  // const handleDelete = () => {
-  //   onClose()
-  // }
+const Note: NextPage<{ note: iNote }> = ({ note }) => {
+  const { data: session, status } = useSession()
 
   const handleSubmit = (e: { preventDefault: () => void; target: any }) => {
     e.preventDefault()
@@ -117,7 +70,20 @@ const Note = () => {
     const description = e.target.description.value
 
     console.log({ description, title, e })
-    // console.log({ e })
+  }
+
+  if (!session) {
+    return (
+      <Center h='100vh'>
+        <Spinner
+          thickness='4px'
+          speed='0.65s'
+          emptyColor='gray.200'
+          color='blue.500'
+          size='xl'
+        />
+      </Center>
+    )
   }
 
   return (
@@ -140,34 +106,13 @@ const Note = () => {
             Go back
           </Button>
 
-          <DeleteButton title='Notes' id={data.id} />
+          <DeleteButton
+            title='Note'
+            id={note.id}
+            deleteUrl='/api/notes'
+            userId={(session?.user as iUser).id}
+          />
         </Flex>
-
-        {/* <AlertDialog
-          isOpen={isOpen}
-          leastDestructiveRef={cancelRef}
-          onClose={onClose}>
-          <AlertDialogOverlay>
-            <AlertDialogContent>
-              <AlertDialogHeader fontSize='lg' fontWeight='bold'>
-                Delete Note
-              </AlertDialogHeader>
-
-              <AlertDialogBody>
-                Are you sure? You can&apos;t undo this action afterwards.
-              </AlertDialogBody>
-
-              <AlertDialogFooter>
-                <Button ref={cancelRef} onClick={onClose}>
-                  Cancel
-                </Button>
-                <Button colorScheme='red' onClick={handleDelete} ml={3}>
-                  Delete
-                </Button>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialogOverlay>
-        </AlertDialog> */}
 
         <Center h='calc(100vh - 200px)'>
           <Card p='6' w='clamp(270px,50%,440px)'>
@@ -177,12 +122,12 @@ const Note = () => {
             <form onSubmit={handleSubmit}>
               <CardBody>
                 <Editable
-                  defaultValue={data.title}
-                  fontSize='3xl'
+                  defaultValue={note.title}
                   display='flex'
                   justifyContent='space-between'
                   alignItems='center'
-                  gap='14px'>
+                  gap='14px'
+                  fontSize='5xl'>
                   <EditablePreview />
                   <EditableInput name='title' />
                   <EditableControls />
@@ -190,18 +135,22 @@ const Note = () => {
 
                 <Flex h='30px' gap='5px' align='center' ml='10px'>
                   <Text fontSize='sm'>
-                    {new Intl.DateTimeFormat('es-VE').format(data.createdAt)}
+                    {new Intl.DateTimeFormat('es-VE').format(
+                      new Date(note.createdAt),
+                    )}
                   </Text>
                   <Divider orientation='vertical' />
-                  <Text fontSize='sm'>{data.characters} characters</Text>
+                  <Text fontSize='sm'>{note.characters} characters</Text>
                 </Flex>
 
                 <Editable
-                  defaultValue={data.description}
+                  defaultValue={note.description}
                   display='flex'
                   justifyContent='space-between'
                   alignItems='center'
-                  gap='14px'>
+                  gap='14px'
+                  fontSize='lg'
+                  mt='3'>
                   <EditablePreview />
                   <EditableTextarea name='description' />
                   <EditableControls />

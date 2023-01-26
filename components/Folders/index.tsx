@@ -1,4 +1,4 @@
-import { CalendarIcon } from '@chakra-ui/icons'
+import { AddIcon, CalendarIcon } from '@chakra-ui/icons'
 import {
   Flex,
   Tag,
@@ -13,8 +13,13 @@ import {
   ModalBody,
   ModalCloseButton,
   ListItem,
-  List
+  List,
+  Editable,
+  EditableInput,
+  EditablePreview,
 } from '@chakra-ui/react'
+import { DeleteButton } from 'components/common/Button/Delete'
+import { EditableControls } from 'components/common/EditableControls'
 import { useEffect, useState } from 'react'
 import { iFolder } from 'utils/interfaces/folder'
 
@@ -79,28 +84,58 @@ export const Folders = () => {
         <CalendarIcon />
       </Tag>
 
-      
-
       <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay filter='auto' blur='2px' />
+        <ModalOverlay filter='auto' blur='5px' />
         <ModalContent>
           <ModalHeader>Manage Folders</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-          {folders.map((folder) => {
-            return <List key={folder.id} spacing={4} bg="blackAlpha.300" p={1} borderRadius="lg">
-            <ListItem>
-              
-              {folder.title}
-            </ListItem>
-            
-          </List>
-          })}
-            </ModalBody>
+            <List spacing={2}>
+              {folders.map((folder) => {
+                return (
+                  <Flex
+                    key={folder.id}
+                    bg='blackAlpha.300'
+                    p={3}
+                    borderRadius='lg'
+                    gap={2}
+                    _hover={{ background: 'blackAlpha.400' }}>
+                    {folder.title === 'All' ||
+                    folder.title === 'Uncategorised' ? (
+                      <ListItem>{folder.title}</ListItem>
+                    ) : (
+                      <>
+                        <Editable
+                          defaultValue={folder.title}
+                          w='100%'
+                          display='flex'
+                          justifyContent='space-between'
+                          alignItems='center'
+                          gap={1}>
+                          <EditablePreview />
+                          <EditableInput name='title' />
+                          <EditableControls />
+                        </Editable>
+                        <DeleteButton
+                          title='Folder'
+                          id={folder.id}
+                          type='rounded'
+                          deleteUrl='/api/folders'></DeleteButton>
+                      </>
+                    )}
+                  </Flex>
+                )
+              })}
+            </List>
+          </ModalBody>
 
-          <ModalFooter>
-            <Button colorScheme='blue' mr={3} onClick={onClose}>
-              Close
+          <ModalFooter justifyContent='center'>
+            <Button
+              rightIcon={<AddIcon />}
+              colorScheme='blue'
+              mr={3}
+              onClick={onClose}>
+              New folder
             </Button>
           </ModalFooter>
         </ModalContent>

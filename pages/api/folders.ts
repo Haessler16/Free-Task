@@ -1,7 +1,7 @@
 import prisma from 'lib/prisma'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
-export default async function handleNotes(
+export default async function handleFolders(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
@@ -12,50 +12,50 @@ export default async function handleNotes(
 
   if (req.method === 'GET') {
     if (typeof query.userId === 'string') {
-      const notes = await prisma.notes.findMany({
+      const folders = await prisma.folder.findMany({
         where: { userId: Number(query.userId) },
       })
 
-      res.json(notes)
+      res.json(folders)
       return
     } else if (typeof query.id === 'string') {
-      const notes = await prisma.notes.findUnique({
+      const folders = await prisma.folder.findUnique({
         where: { id: Number(query.id) },
       })
 
-      res.json(notes)
+      res.json(folders)
       return
     } else {
-      const notes = await prisma.notes.findMany()
+      const folders = await prisma.folder.findMany()
 
-      res.json(notes)
+      res.json(folders)
       return
     }
   }
 
   if (req.method === 'POST') {
-    const notes = await prisma.notes.create({
-      data: { title, description, characters, userId },
+    const folders = await prisma.folder.create({
+      data: { title, userId },
     })
 
-    res.json(notes)
+    res.json(folders)
     return
   }
 
   if (req.method === 'UPDATE') {
-    const notes = await prisma.notes.update({
+    const folders = await prisma.folder.update({
       where: { id: id },
-      data: { title, description, characters, userId },
+      data: { title },
     })
 
-    res.json(notes)
+    res.json(folders)
     return
   }
 
   if (req.method === 'DELETE') {
-    const notes = await prisma.notes.delete({ where: { id: id } })
+    const folders = await prisma.folder.delete({ where: { id: id } })
 
-    res.json(notes)
+    res.json(folders)
     return
   }
 }

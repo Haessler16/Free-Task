@@ -1,7 +1,7 @@
 import Head from 'next/head'
 import { MainLayout } from 'layouts/main'
 import { NotesList } from 'components/Notes/List'
-import { iNotes } from 'utils/interfaces/notes'
+import { iNote } from 'utils/interfaces/notes'
 import {
   Box,
   Text,
@@ -16,13 +16,13 @@ import { FormToNotes } from 'components/Notes/Form'
 import { AddButton } from 'components/AddButton'
 import { getSession, GetSessionParams, useSession } from 'next-auth/react'
 
-import { PrismaClient } from '@prisma/client'
 import { NextPage } from 'next'
 import { NotesHeader } from 'components/Notes/Header'
 import { iUser } from 'utils/interfaces/user'
 
 import useSWR from 'swr'
 import fetcher from 'utils/fetcher'
+import prisma from 'lib/prisma'
 
 export async function getServerSideProps(
   context: GetSessionParams | undefined,
@@ -38,8 +38,6 @@ export async function getServerSideProps(
     }
   }
   const user = session.user as iUser
-
-  const prisma = new PrismaClient()
   const notes = await prisma.notes.findMany({
     where: {
       userId: user.id,
@@ -53,22 +51,22 @@ export async function getServerSideProps(
   }
 }
 
-const Notes: NextPage<{ notes: iNotes[] }> = ({ notes }) => {
+const Notes: NextPage<{ notes: iNote[] }> = ({ notes }) => {
   const { data: session } = useSession()
 
-  const { data } = useSWR<iNotes[]>(
+  const [showForm, setShowForm] = useState(false)
+  const [isLessThan800] = useMediaQuery('(max-width: 760px)', {
+    ssr: true,
+    fallback: false, // return false on the server, and re-evaluate on the client side
+  })
+
+  const { data } = useSWR<iNote[]>(
     session ? `/api/notes?userId=${(session?.user as iUser).id}` : null,
     fetcher,
     {
       fallbackData: notes,
     },
   )
-  
-  const [showForm, setShowForm] = useState(false)
-  const [isLessThan800] = useMediaQuery('(max-width: 760px)', {
-    ssr: true,
-    fallback: false, // return false on the server, and re-evaluate on the client side
-  })
 
   const addNotesForm = () => {
     setShowForm(true)
@@ -76,7 +74,7 @@ const Notes: NextPage<{ notes: iNotes[] }> = ({ notes }) => {
 
   if (!data || !session) {
     return (
-      <Center h="100vh">
+      <Center h='100vh'>
         <Spinner
           thickness='4px'
           speed='0.65s'

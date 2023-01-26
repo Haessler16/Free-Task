@@ -1,7 +1,7 @@
 import { iFolder } from './folder'
 import { iUser } from './user'
 
-export interface iNotes {
+export interface iNote {
   id: number
   title: string
   description?: string

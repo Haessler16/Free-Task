@@ -24,6 +24,13 @@ import useSWR from 'swr'
 import fetcher from 'utils/fetcher'
 import prisma from 'lib/prisma'
 import { useGetNotes } from 'hooks/useGetNotes'
+import { iFolder } from 'utils/interfaces/folder'
+import { useGetFolders } from 'hooks/useGetFolders'
+
+interface iNotesProps {
+  notes: iNote[]
+  folders: iFolder[]
+}
 
 export async function getServerSideProps(
   context: GetSessionParams | undefined,
@@ -45,16 +52,23 @@ export async function getServerSideProps(
     },
   })
 
+  const folders = await prisma.folder.findMany({
+    where: {
+      userId: user.id,
+    },
+  })
+
   return {
     props: {
       notes: JSON.parse(JSON.stringify(notes)),
+      folders: JSON.parse(JSON.stringify(folders)),
     },
   }
 }
 
-const Notes: NextPage<{ notes: iNote[] }> = ({ notes }) => {
+const Notes: NextPage<iNotesProps> = ({ notes, folders }) => {
   const [showForm, setShowForm] = useState(false)
-  const [folderSelected, setFolderSelected] = useState(0)
+  const [folderSelected, setFolderSelected] = useState<number | null>(0)
 
   const [isLessThan800] = useMediaQuery('(max-width: 760px)', {
     ssr: true,
@@ -63,14 +77,15 @@ const Notes: NextPage<{ notes: iNote[] }> = ({ notes }) => {
 
   const { notesData, isLoading, error, session } = useGetNotes({
     fallback: notes,
-    folder: folderSelected,
+    folderId: folderSelected,
   })
+
+  const { foldersData } = useGetFolders({ fallback: folders })
 
   const addNotesForm = () => {
     setShowForm(true)
   }
 
-  console.log({notesData})
   if (isLoading || !session) {
     return (
       <Center h='100vh'>
@@ -105,6 +120,7 @@ const Notes: NextPage<{ notes: iNote[] }> = ({ notes }) => {
               addNotesForm={addNotesForm}
               folderSelected={folderSelected}
               setFolderSelected={setFolderSelected}
+              folders={foldersData}
             />
 
             {notesData.length > 0 ? (
@@ -117,7 +133,8 @@ const Notes: NextPage<{ notes: iNote[] }> = ({ notes }) => {
                     <NotesList
                       key={note.id}
                       note={note}
-                      user={session?.user as iUser}
+                      userId={(session?.user as iUser).id}
+                      folderId={folderSelected}
                     />
                   )
                 })}
@@ -134,6 +151,7 @@ const Notes: NextPage<{ notes: iNote[] }> = ({ notes }) => {
           <FormToNotes
             setShowForm={setShowForm}
             user={session?.user as iUser}
+            folders={foldersData}
           />
         )}
       </main>

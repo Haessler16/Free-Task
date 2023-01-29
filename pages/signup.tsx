@@ -99,13 +99,6 @@ const Signup: NextPage = () => {
           <Link onClick={() => signIn()} fontWeight='bold'>
             Sign In
           </Link>
-
-          {/* <Button
-            onClick={toggleColorMode}
-            background='whiteAlpha.400'
-            boxShadow='2xl'>
-            {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
-          </Button> */}
         </>
       </chakra.header>
 

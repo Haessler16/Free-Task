@@ -84,8 +84,7 @@ export const authOptions = {
         const oneUser = await getOne.json()
 
         if (session.user.provider !== 'credentials' && oneUser === null) {
-          console.log({ us: session.user, token: token, oneUser })
-          const res = await fetch(`${process.env.NEXTAUTH_URL}/api/user`, {
+          await fetch(`${process.env.NEXTAUTH_URL}/api/user`, {
             method: 'POST',
             body: JSON.stringify({
               name: session.user.name,
@@ -94,9 +93,6 @@ export const authOptions = {
               provider: session.user.provider,
             }),
           })
-
-          const user = res.json()
-          console.log({ user })
         }
         session.user.id = oneUser?.id
         session.user.role = oneUser?.role

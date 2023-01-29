@@ -1,5 +1,6 @@
 import { FC, useState } from 'react'
 import {
+  Text,
   Button,
   Popover,
   PopoverTrigger,
@@ -9,20 +10,25 @@ import {
   PopoverArrow,
   PopoverCloseButton,
   FormControl,
-  ButtonGroup,
   Input,
   FormLabel,
+  useDisclosure,
 } from '@chakra-ui/react'
 
 import { AddIcon } from '@chakra-ui/icons'
 import { iUser } from 'utils/interfaces/user'
 import { useSession } from 'next-auth/react'
+import { mutate } from 'swr'
 
 export const CreateFolder = () => {
-  const [savingData, setSavingData] = useState(false)
   const { data: session } = useSession()
+  const { isOpen, onToggle, onClose } = useDisclosure()
+
+  const [savingData, setSavingData] = useState(false)
+  const [error, setError] = useState(undefined)
 
   const handleSubmit = async (e: { preventDefault?: any; target?: any }) => {
+    setSavingData(true)
     e.preventDefault()
 
     const { target } = e
@@ -31,23 +37,37 @@ export const CreateFolder = () => {
     const user = session?.user as iUser
 
     if (user) {
-      const createdFolder = await fetch(`api/folders`, {
-        method: 'POST',
-        body: JSON.stringify({
-          title,
-          userId: user.id,
-        }),
-      })
+      try {
+        const createdFolder = await fetch(`api/folders`, {
+          method: 'POST',
+          body: JSON.stringify({
+            title,
+            userId: user.id,
+          }),
+        })
 
-      const folder = await createdFolder.json()
-      console.log({ folder })
+        const folder = await createdFolder.json()
+        console.log({ folder })
+        mutate(`/api/folders?userId=${user.id}`)
+        setSavingData(false)
+        onClose()
+      } catch (error: any) {
+        setSavingData(false)
+        setError(error.message)
+      }
     }
   }
 
   return (
-    <Popover isLazy>
+    <Popover
+      isLazy
+      returnFocusOnClose={false}
+      isOpen={isOpen}
+      onClose={onClose}
+      closeOnBlur={false}>
       <PopoverTrigger>
         <Button
+          onClick={onToggle}
           rightIcon={<AddIcon />}
           variant='blue'
           color='white'
@@ -63,19 +83,20 @@ export const CreateFolder = () => {
         <PopoverCloseButton />
 
         <PopoverBody>
-          <form>
+          <form onSubmit={handleSubmit}>
             <FormControl>
               <FormLabel>Name</FormLabel>
-              <Input required />
+              <Input required name='title' />
             </FormControl>
+            <Text color='red'>{error}</Text>
 
-            <ButtonGroup display='flex' justifyContent='flex-end'>
-              <Button variant='outline'>Cancel</Button>
-
-              <Button colorScheme='teal' onSubmit={handleSubmit}>
-                Save
-              </Button>
-            </ButtonGroup>
+            <Button
+              type='submit'
+              colorScheme='teal'
+              mt='2'
+              isLoading={savingData}>
+              Save
+            </Button>
           </form>
         </PopoverBody>
       </PopoverContent>

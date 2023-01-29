@@ -5,37 +5,25 @@ export default async function handleNotes(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const { id, title, description, characters, userId } =
+  const { id, title, description, characters, userId, folderId } =
     req.body !== '' && JSON.parse(req.body)
 
   const { query } = req
 
   if (req.method === 'GET') {
-    if (typeof query.userId === 'string' && query.userId !== 'undefined') {
-      const notes = await prisma.notes.findMany({
-        where: {
-          userId: Number(query.userId),
-        },
-      })
-
-      res.json(notes)
-      return
-    } else if (typeof query.id === 'string' && query.id !== 'undefined') {
-      const notes = await prisma.notes.findUnique({
-        where: { id: Number(query.id) },
-      })
-
-      res.json(notes)
-      return
-    } else {
-      res.json([])
-      return
-    }
+    const notes = await getNotes(query)
+    res.json(notes)
   }
 
   if (req.method === 'POST') {
     const notes = await prisma.notes.create({
-      data: { title, description, characters, userId },
+      data: {
+        title,
+        description,
+        characters,
+        userId,
+        folderId: folderId !== 0 ? folderId : null,
+      },
     })
 
     res.json(notes)
@@ -45,7 +33,7 @@ export default async function handleNotes(
   if (req.method === 'UPDATE') {
     const notes = await prisma.notes.update({
       where: { id: id },
-      data: { title, description, characters, userId },
+      data: { title, description, characters, userId, folderId },
     })
 
     res.json(notes)
@@ -60,8 +48,42 @@ export default async function handleNotes(
   }
 }
 
-// function getAllUser(req: NextApiRequest) {}
-// function getOneUser(req: NextApiRequest) {}
+async function getNotes(query: Partial<{ [key: string]: string | string[] }>) {
+  let { folderId: fdrId, userId, id } = query
+
+  const folderId = isNaN(Number(fdrId)) ? null : Number(fdrId)
+
+  if (typeof userId === 'string' && userId !== 'undefined') {
+    if (folderId !== 0) {
+      const notes = await prisma.notes.findMany({
+        where: {
+          userId: Number(userId),
+          folderId: {
+            equals: folderId,
+          },
+        },
+      })
+
+      return notes
+    } else {
+      const notes = await prisma.notes.findMany({
+        where: {
+          userId: Number(userId),
+        },
+      })
+
+      return notes
+    }
+  } else if (typeof id === 'string' && id !== 'undefined') {
+    const notes = await prisma.notes.findUnique({
+      where: { id: Number(id) },
+    })
+
+    return notes
+  }
+
+  return []
+}
 // function createUser(req: NextApiRequest) {}
 // function updateUser(req: NextApiRequest) {}
 // function deleteUser(req: NextApiRequest) {}

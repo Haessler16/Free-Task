@@ -10,19 +10,28 @@ import {
   FormLabel,
   Heading,
   Input,
+  Select,
   Textarea,
 } from '@chakra-ui/react'
 import { ArrowBackIcon } from '@chakra-ui/icons'
 
 import { iUser } from 'utils/interfaces/user'
 import { mutate } from 'swr'
+import { iFolder } from 'utils/interfaces/folder'
 
 interface iFormToNotes {
   setShowForm: (state: boolean) => void
   user: iUser
+
+  folders: iFolder[] | undefined
 }
 
-export const FormToNotes: FC<iFormToNotes> = ({ setShowForm, user }) => {
+export const FormToNotes: FC<iFormToNotes> = ({
+  setShowForm,
+  user,
+
+  folders,
+}) => {
   const [savingData, setSavingData] = useState(false)
 
   const handleSubmit = async (e: { preventDefault?: any; target?: any }) => {
@@ -33,23 +42,33 @@ export const FormToNotes: FC<iFormToNotes> = ({ setShowForm, user }) => {
     const title: string = target.title.value
     const description: string = target.description.value
     const characters: number = title.concat(description).length
+    let folderId = target.folderId.value
+
+    folderId = isNaN(Number(folderId)) ? 0 : Number(folderId)
+
+    console.log({ folderId })
 
     if (user) {
-      const createdNote = await fetch(`api/notes`, {
-        method: 'POST',
-        body: JSON.stringify({
-          title,
-          userId: user.id,
-          description,
-          characters,
-        }),
-      })
+      try {
+        const createdNote = await fetch(`api/notes`, {
+          method: 'POST',
+          body: JSON.stringify({
+            title,
+            userId: user.id,
+            description,
+            characters,
+            folderId,
+          }),
+        })
 
-      const note = await createdNote.json()
-      if (note) {
+        const note = await createdNote.json()
+        if (note) {
+          mutate(`/api/notes?userId=${user.id}&folderId=${0}`)
+          setSavingData(false)
+          setShowForm(false)
+        }
+      } catch (error) {
         setSavingData(false)
-        mutate(`/api/notes?userId=${user.id}`)
-        setShowForm(false)
       }
     }
   }
@@ -81,6 +100,18 @@ export const FormToNotes: FC<iFormToNotes> = ({ setShowForm, user }) => {
                   name='description'
                   placeholder='Write here some description'
                 />
+
+                {folders && (
+                  <Select name='folderId' mt='2'>
+                    {[{ id: 0, title: 'All' }, ...folders].map((folder) => {
+                      return (
+                        <option key={folder.id} value={folder.id}>
+                          {folder.title}
+                        </option>
+                      )
+                    })}
+                  </Select>
+                )}
               </FormControl>
 
               <Center mt={6}>

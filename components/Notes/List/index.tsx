@@ -8,7 +8,13 @@ import { iNote } from 'utils/interfaces/notes'
 import { DeleteButton } from 'components/common/Button/Delete'
 import { iUser } from 'utils/interfaces/user'
 
-export const NotesList: FC<{ note: iNote; user: iUser }> = ({ note, user }) => {
+interface iNoteListProps {
+  note: iNote
+  userId: number
+  folderId: number | null
+}
+
+export const NotesList: FC<iNoteListProps> = ({ note, userId, folderId }) => {
   return (
     <Card p='4' flexDir='row' justifyContent='space-between' shadow='2xl'>
       <Box w='100%'>
@@ -26,7 +32,8 @@ export const NotesList: FC<{ note: iNote; user: iUser }> = ({ note, user }) => {
         id={note.id}
         type='rounded'
         deleteUrl='/api/notes'
-        userId={user.id}
+        userId={userId}
+        folderId={folderId}
       />
     </Card>
   )

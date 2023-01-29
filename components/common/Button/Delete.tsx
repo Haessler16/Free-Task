@@ -21,6 +21,7 @@ interface iDeleteButton {
   deleteUrl: string
   type?: 'common' | 'rounded'
   userId?: number
+  folderId?: number | null
 }
 
 export const DeleteButton: FC<iDeleteButton> = ({
@@ -29,6 +30,7 @@ export const DeleteButton: FC<iDeleteButton> = ({
   type = 'common',
   deleteUrl,
   userId,
+  folderId,
 }) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const cancelRef = useRef(null)
@@ -42,7 +44,9 @@ export const DeleteButton: FC<iDeleteButton> = ({
     const isDeleted = await deleteOne.json()
 
     if (isDeleted) {
-      title === 'User' ? signOut() : mutate(`${deleteUrl}?userId=${userId}`)
+      title === 'User'
+        ? signOut()
+        : mutate(`${deleteUrl}?userId=${userId}&folderId=${folderId}`)
       onClose()
     }
   }

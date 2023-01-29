@@ -1,10 +1,9 @@
-import { AddIcon, CalendarIcon } from '@chakra-ui/icons'
+import { CalendarIcon } from '@chakra-ui/icons'
 import {
   Flex,
   Tag,
   TagLabel,
   useDisclosure,
-  Button,
   Modal,
   ModalOverlay,
   ModalContent,
@@ -20,49 +19,33 @@ import {
 } from '@chakra-ui/react'
 import { DeleteButton } from 'components/common/Button/Delete'
 import { EditableControls } from 'components/common/EditableControls'
-import { Dispatch, FC, SetStateAction, useEffect, useState } from 'react'
+import { Dispatch, FC, SetStateAction, useState } from 'react'
 import { iFolder } from 'utils/interfaces/folder'
 import { CreateFolder } from './CreateFolder'
 
-const folders: iFolder[] = [
-  {
-    id: 1,
-    title: 'Dev',
-    notes: [],
-    selected: false,
-  },
-  // {
-  //   id: 2,
-  //   title: 'Me',
-  //   notes: [],
-  //   selected: false,
-  // },
-]
-
 interface iFolderProps {
-  folderSelected: number
-  setFolderSelected: Dispatch<SetStateAction<number>>
+  folderSelected: number | null
+  setFolderSelected: Dispatch<SetStateAction<number | null>>
+  folders: iFolder[] | undefined
 }
 
 export const Folders: FC<iFolderProps> = ({
   folderSelected,
   setFolderSelected,
+  folders,
 }) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
 
-  const [showForm, setShowForm] = useState(false)
+  // const [showForm, setShowForm] = useState(false)
 
-  const selectFolder = (id: number) => {
+  const selectFolder = (id: number | null) => {
     setFolderSelected(id)
   }
 
-  // useEffect(() => {
-  //   const bum = folders.splice(1, 1)
-  //   // console.log('som')
-  //   folders.push(bum[0])
-  // }, [])
-
-  // console.log({ folders })
+  if (!folders) {
+    return <h1>No data</h1>
+  }
+  console.log({ folders })
 
   return (
     <Flex gap='5px'>
@@ -90,9 +73,9 @@ export const Folders: FC<iFolderProps> = ({
 
       <Tag
         size='lg'
-        variant={folderSelected === 0.1 ? 'solid' : 'subtle'}
+        variant={folderSelected === null ? 'solid' : 'subtle'}
         cursor='pointer'
-        onClick={() => selectFolder(0.1)}>
+        onClick={() => selectFolder(null)}>
         <TagLabel>Uncategorised</TagLabel>
       </Tag>
 
@@ -116,7 +99,10 @@ export const Folders: FC<iFolderProps> = ({
 
           <ModalBody>
             <List spacing={2}>
-              <ListItem>All</ListItem>
+              <ListItem bg='blackAlpha.300' p={3} borderRadius='lg'>
+                All
+              </ListItem>
+
               {folders.map((folder) => {
                 return (
                   <Flex
@@ -148,7 +134,10 @@ export const Folders: FC<iFolderProps> = ({
                   </Flex>
                 )
               })}
-              <ListItem>Uncategorised</ListItem>
+
+              <ListItem bg='blackAlpha.300' p={3} borderRadius='lg'>
+                Uncategorised
+              </ListItem>
             </List>
           </ModalBody>
 

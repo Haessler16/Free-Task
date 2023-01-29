@@ -9,19 +9,21 @@ import { iFolder } from 'utils/interfaces/folder'
 
 interface iUseGetNotesProps {
   fallback: iNote[]
-  folder: number
+  folderId: number | null
 }
 
-export const useGetNotes = ({ fallback, folder }: iUseGetNotesProps) => {
+export const useGetNotes = ({ fallback, folderId }: iUseGetNotesProps) => {
   const { data: session } = useSession()
 
   const { data, isLoading, error } = useSWR<iNote[]>(
-    session ? `/api/notes?userId=${(session?.user as iUser).id}` : null,
+    session
+      ? `/api/notes?userId=${(session?.user as iUser).id}&folderId=${folderId}`
+      : null,
     fetcher,
     {
       fallbackData: fallback,
     },
   )
-  console.log({ folder })
+  console.log({ folderId })
   return { notesData: data, isLoading, error, session }
 }

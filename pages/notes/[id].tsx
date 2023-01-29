@@ -60,7 +60,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   }
 }
 
-const Note: NextPage<{ note: iNote }> = ({ note }) => {
+const Note: NextPage<{ note: iNote | undefined }> = ({ note }) => {
   const { data: session, status } = useSession()
 
   const handleSubmit = (e: { preventDefault: () => void; target: any }) => {
@@ -84,6 +84,10 @@ const Note: NextPage<{ note: iNote }> = ({ note }) => {
         />
       </Center>
     )
+  }
+
+  if (!note) {
+    return <h1>No data</h1>
   }
 
   return (

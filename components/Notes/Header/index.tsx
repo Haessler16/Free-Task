@@ -2,12 +2,14 @@ import { Dispatch, FC, SetStateAction } from 'react'
 import { AddIcon } from '@chakra-ui/icons'
 import { Button, Flex } from '@chakra-ui/react'
 import { Folders } from 'components/Folders'
+import { iFolder } from 'utils/interfaces/folder'
 
 interface iNoteHeader {
   isLessThan800: boolean
   addNotesForm: () => void
-  folderSelected: number
-  setFolderSelected: Dispatch<SetStateAction<number>>
+  folderSelected: number | null
+  setFolderSelected: Dispatch<SetStateAction<number | null>>
+  folders: iFolder[] | undefined
 }
 
 export const NotesHeader: FC<iNoteHeader> = ({
@@ -15,6 +17,7 @@ export const NotesHeader: FC<iNoteHeader> = ({
   addNotesForm,
   folderSelected,
   setFolderSelected,
+  folders,
 }) => {
   return (
     <Flex
@@ -37,6 +40,7 @@ export const NotesHeader: FC<iNoteHeader> = ({
       <Folders
         folderSelected={folderSelected}
         setFolderSelected={setFolderSelected}
+        folders={folders}
       />
     </Flex>
   )

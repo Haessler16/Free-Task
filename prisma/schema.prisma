@@ -21,7 +21,8 @@ model User {
   name      String
   email     String   @unique
   image     String
-  password  String? //TO-DO NO OPTIONAL
+  password  String?
+  provider  String
   createdAt DateTime @default(now())
   role      Role     @default(admin)
   notes     Notes[]

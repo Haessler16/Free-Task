@@ -1,4 +1,4 @@
-import { iNotes } from './notes'
+import { iNote } from './notes'
 import { iTask } from './task'
 
 type tRole = 'admin' | 'edit' | 'read'
@@ -8,9 +8,9 @@ export interface iUser {
   email: string
   password: string
   image: string
-  provider?: string
+  provider: string
   role: tRole
   createdAt?: number
-  notes?: iNotes[]
+  notes?: iNote[]
   task?: iTask[]
 }

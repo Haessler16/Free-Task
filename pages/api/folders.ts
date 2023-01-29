@@ -5,8 +5,7 @@ export default async function handleFolders(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const { id, title, description, characters, userId } =
-    req.body !== '' && JSON.parse(req.body)
+  const { id, title, userId } = req.body !== '' && JSON.parse(req.body)
 
   const { query } = req
 

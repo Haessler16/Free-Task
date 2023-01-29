@@ -84,11 +84,7 @@ export const FormToNotes: FC<iFormToNotes> = ({ setShowForm, user }) => {
               </FormControl>
 
               <Center mt={6}>
-                <Button
-                  type='submit'
-                  bg='#09f'
-                  _hover={{ background: '#06f' }}
-                  isLoading={savingData}>
+                <Button type='submit' variant='blue' isLoading={savingData}>
                   Create
                 </Button>
               </Center>

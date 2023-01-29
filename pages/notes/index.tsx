@@ -23,6 +23,7 @@ import { iUser } from 'utils/interfaces/user'
 import useSWR from 'swr'
 import fetcher from 'utils/fetcher'
 import prisma from 'lib/prisma'
+import { useGetNotes } from 'hooks/useGetNotes'
 
 export async function getServerSideProps(
   context: GetSessionParams | undefined,
@@ -52,27 +53,25 @@ export async function getServerSideProps(
 }
 
 const Notes: NextPage<{ notes: iNote[] }> = ({ notes }) => {
-  const { data: session } = useSession()
-
   const [showForm, setShowForm] = useState(false)
+  const [folderSelected, setFolderSelected] = useState(0)
+
   const [isLessThan800] = useMediaQuery('(max-width: 760px)', {
     ssr: true,
     fallback: false, // return false on the server, and re-evaluate on the client side
   })
 
-  const { data } = useSWR<iNote[]>(
-    session ? `/api/notes?userId=${(session?.user as iUser).id}` : null,
-    fetcher,
-    {
-      fallbackData: notes,
-    },
-  )
+  const { notesData, isLoading, error, session } = useGetNotes({
+    fallback: notes,
+    folder: folderSelected,
+  })
 
   const addNotesForm = () => {
     setShowForm(true)
   }
 
-  if (!data || !session) {
+  console.log({notesData})
+  if (isLoading || !session) {
     return (
       <Center h='100vh'>
         <Spinner
@@ -86,7 +85,10 @@ const Notes: NextPage<{ notes: iNote[] }> = ({ notes }) => {
     )
   }
 
-  console.log({ data })
+  if (!notesData) {
+    return <h1>No data</h1>
+  }
+
   return (
     <MainLayout>
       <Head>
@@ -101,14 +103,16 @@ const Notes: NextPage<{ notes: iNote[] }> = ({ notes }) => {
             <NotesHeader
               isLessThan800={isLessThan800}
               addNotesForm={addNotesForm}
+              folderSelected={folderSelected}
+              setFolderSelected={setFolderSelected}
             />
 
-            {data.length > 0 ? (
+            {notesData.length > 0 ? (
               <Grid
                 id='characters_grid'
                 templateColumns='repeat(auto-fit, minmax(min(100%, 22rem), 1fr))'
                 gap={2}>
-                {data.map((note) => {
+                {notesData.map((note) => {
                   return (
                     <NotesList
                       key={note.id}

@@ -49,7 +49,14 @@ const Signup: NextPage = () => {
     if (!isUserAlReady) {
       const res = await fetch('api/user', {
         method: 'POST',
-        body: JSON.stringify({ name, email, image, password, role }),
+        body: JSON.stringify({
+          name,
+          email,
+          image,
+          password,
+          role,
+          provider: 'credentials',
+        }),
       })
 
       const data = await res.json()
@@ -143,10 +150,7 @@ const Signup: NextPage = () => {
                   </Select>
 
                   <Center mt='4'>
-                    <Button
-                      type='submit'
-                      bg='#09f'
-                      _hover={{ background: '#06f' }}>
+                    <Button type='submit' variant='blue'>
                       Sign Up
                     </Button>
                   </Center>

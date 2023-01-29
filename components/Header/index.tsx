@@ -77,6 +77,7 @@ export const Header = () => {
             href='/notes'
             fontSize='lg'
             fontWeight='bold'
+            color='white'
             textDecoration={
               router.pathname.includes('notes') ? 'underline' : 'none'
             }>
@@ -88,6 +89,7 @@ export const Header = () => {
             href='/task'
             fontSize='lg'
             fontWeight='bold'
+            color='white'
             textDecoration={
               router.pathname.includes('task') ? 'underline' : 'none'
             }>

@@ -5,7 +5,7 @@ export default async function handleUser(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const { id, name, email, image, role, password } =
+  const { id, name, email, image, role, password, provider } =
     req.body !== '' && JSON.parse(req.body)
   const { type = 'many' } = req.query
 
@@ -27,7 +27,7 @@ export default async function handleUser(
 
   if (req.method === 'POST') {
     const user = await prisma.user.create({
-      data: { name, email, image, role, password },
+      data: { name, email, image, role, password, provider },
     })
 
     res.json(user)
@@ -45,6 +45,7 @@ export default async function handleUser(
   }
 
   if (req.method === 'DELETE') {
+    console.log({ id })
     const user = await prisma.user.delete({ where: { id: id } })
 
     res.json(user)

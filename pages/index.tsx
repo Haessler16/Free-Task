@@ -85,13 +85,7 @@ export default function Home() {
 
           <Text>create notes, sorted by folders and create task</Text>
 
-          <Button
-            mt='24'
-            as={NextLink}
-            href='/signup'
-            bg='#09f'
-            size='lg'
-            _hover={{ background: '#06f' }}>
+          <Button mt='24' as={NextLink} href='/signup' size='lg' variant='blue'>
             Register
           </Button>
         </Card>

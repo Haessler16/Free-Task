@@ -65,9 +65,8 @@ export const authOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, account }: any) {
+    async jwt({ token, account, profile }: any) {
       // Persist the OAuth access_token and or the user id to the token right after signin
-
       if (account) {
         token.provider = account.provider
       }
@@ -85,11 +84,19 @@ export const authOptions = {
         const oneUser = await getOne.json()
 
         if (session.user.provider !== 'credentials' && oneUser === null) {
-          console.log({ us: session.user, pro: token.provider, oneUser })
-          // const res = await fetch('api/user', {
-          //   method: 'POST',
-          //   body: JSON.stringify({ name, email, image, password, role }),
-          // })
+          console.log({ us: session.user, token: token, oneUser })
+          const res = await fetch(`${process.env.NEXTAUTH_URL}/api/user`, {
+            method: 'POST',
+            body: JSON.stringify({
+              name: session.user.name,
+              email: session.user.email,
+              image: session.user.image,
+              provider: session.user.provider,
+            }),
+          })
+
+          const user = res.json()
+          console.log({ user })
         }
         session.user.id = oneUser?.id
         session.user.role = oneUser?.role

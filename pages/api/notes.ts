@@ -11,14 +11,16 @@ export default async function handleNotes(
   const { query } = req
 
   if (req.method === 'GET') {
-    if (typeof query.userId === 'string') {
+    if (typeof query.userId === 'string' && query.userId !== 'undefined') {
       const notes = await prisma.notes.findMany({
-        where: { userId: Number(query.userId) },
+        where: {
+          userId: Number(query.userId),
+        },
       })
 
       res.json(notes)
       return
-    } else if (typeof query.id === 'string') {
+    } else if (typeof query.id === 'string' && query.id !== 'undefined') {
       const notes = await prisma.notes.findUnique({
         where: { id: Number(query.id) },
       })
@@ -26,9 +28,7 @@ export default async function handleNotes(
       res.json(notes)
       return
     } else {
-      const notes = await prisma.notes.findMany()
-
-      res.json(notes)
+      res.json([])
       return
     }
   }

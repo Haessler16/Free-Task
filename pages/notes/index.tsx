@@ -20,8 +20,6 @@ import { NextPage } from 'next'
 import { NotesHeader } from 'components/Notes/Header'
 import { iUser } from 'utils/interfaces/user'
 
-import useSWR from 'swr'
-import fetcher from 'utils/fetcher'
 import prisma from 'lib/prisma'
 import { useGetNotes } from 'hooks/useGetNotes'
 import { iFolder } from 'utils/interfaces/folder'
@@ -46,6 +44,7 @@ export async function getServerSideProps(
     }
   }
   const user = session.user as iUser
+
   const notes = await prisma.notes.findMany({
     where: {
       userId: user.id,

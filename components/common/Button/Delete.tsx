@@ -14,6 +14,7 @@ import {
 } from '@chakra-ui/react'
 import { signOut } from 'next-auth/react'
 import { mutate } from 'swr'
+import { useRouter } from 'next/router'
 
 interface iDeleteButton {
   title: string
@@ -34,6 +35,7 @@ export const DeleteButton: FC<iDeleteButton> = ({
 }) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const cancelRef = useRef(null)
+  const router = useRouter()
 
   const handleDelete = async () => {
     const deleteOne = await fetch(deleteUrl, {
@@ -44,9 +46,16 @@ export const DeleteButton: FC<iDeleteButton> = ({
     const isDeleted = await deleteOne.json()
 
     if (isDeleted) {
+      // if (title === 'User') await signOut()
+      // if (title === 'Note') await mutate(`${deleteUrl}?userId=${userId}&folderId=${folderId}`)
+      // if (title === 'Folder') await mutate(`${deleteUrl}?userId=${userId}`)
+      console.log({ title, userId })
       title === 'User'
         ? signOut()
-        : mutate(`${deleteUrl}?userId=${userId}&folderId=${folderId}`)
+        : title === 'Note'
+        ? mutate(`${deleteUrl}?userId=${userId}&folderId=${folderId}`)
+        : mutate(`${deleteUrl}?userId=${userId}`)
+      router.push('/notes')
       onClose()
     }
   }

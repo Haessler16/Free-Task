@@ -18,18 +18,17 @@ import { ArrowBackIcon } from '@chakra-ui/icons'
 import { iUser } from 'utils/interfaces/user'
 import { mutate } from 'swr'
 import { iFolder } from 'utils/interfaces/folder'
+import { SelectFolders } from 'components/common/Select/Folders'
 
 interface iFormToNotes {
   setShowForm: (state: boolean) => void
   user: iUser
-
   folders: iFolder[] | undefined
 }
 
 export const FormToNotes: FC<iFormToNotes> = ({
   setShowForm,
   user,
-
   folders,
 }) => {
   const [savingData, setSavingData] = useState(false)
@@ -45,8 +44,6 @@ export const FormToNotes: FC<iFormToNotes> = ({
     let folderId = target.folderId.value
 
     folderId = isNaN(Number(folderId)) ? 0 : Number(folderId)
-
-    console.log({ folderId })
 
     if (user) {
       try {
@@ -102,15 +99,10 @@ export const FormToNotes: FC<iFormToNotes> = ({
                 />
 
                 {folders && (
-                  <Select name='folderId' mt='2'>
-                    {[{ id: 0, title: 'All' }, ...folders].map((folder) => {
-                      return (
-                        <option key={folder.id} value={folder.id}>
-                          {folder.title}
-                        </option>
-                      )
-                    })}
-                  </Select>
+                  <>
+                    <FormLabel>Folders</FormLabel>
+                    <SelectFolders folders={folders} />
+                  </>
                 )}
               </FormControl>
 

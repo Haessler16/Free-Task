@@ -31,6 +31,13 @@ import { EditableControls } from 'components/common/EditableControls'
 
 import prisma from 'lib/prisma'
 import { iUser } from 'utils/interfaces/user'
+import { iFolder } from 'utils/interfaces/folder'
+import { SelectFolders } from 'components/common/Select/Folders'
+
+interface iNoteProps {
+  note: iNote | undefined
+  folders: iFolder[]
+}
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const session = await getSession(context)
@@ -47,29 +54,42 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     }
   }
 
+  const user = session.user as iUser
+
   const note = await prisma.notes.findUnique({
     where: {
       id: id ? Number(id) : undefined,
     },
   })
 
+  const folders = await prisma.folder.findMany({
+    where: {
+      userId: user.id,
+    },
+  })
+
   return {
     props: {
       note: JSON.parse(JSON.stringify(note)),
+      folders: JSON.parse(JSON.stringify(folders)),
     },
   }
 }
 
-const Note: NextPage<{ note: iNote | undefined }> = ({ note }) => {
+const Note: NextPage<iNoteProps> = ({ note, folders }) => {
   const { data: session, status } = useSession()
 
-  const handleSubmit = (e: { preventDefault: () => void; target: any }) => {
+  const handleSubmit = async (e: {
+    preventDefault: () => void
+    target: any
+  }) => {
     e.preventDefault()
 
     const title = e.target.title.value
     const description = e.target.description.value
+    const folderId = e.target.folderId.value
 
-    console.log({ description, title, e })
+    console.log({ description, title, folderId })
   }
 
   if (!session) {
@@ -159,10 +179,12 @@ const Note: NextPage<{ note: iNote | undefined }> = ({ note }) => {
                   <EditableTextarea name='description' />
                   <EditableControls />
                 </Editable>
+
+                <SelectFolders folders={folders} folderId={note.folderId} />
               </CardBody>
 
               <CardFooter justify='end' p={2}>
-                <Button variant='solid' colorScheme='blue' type='submit'>
+                <Button type='submit' variant='blue'>
                   Done
                 </Button>
               </CardFooter>

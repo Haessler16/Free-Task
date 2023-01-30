@@ -16,12 +16,10 @@ import {
 } from '@chakra-ui/react'
 
 import { AddIcon } from '@chakra-ui/icons'
-import { iUser } from 'utils/interfaces/user'
-import { useSession } from 'next-auth/react'
+
 import { mutate } from 'swr'
 
-export const CreateFolder = () => {
-  const { data: session } = useSession()
+export const CreateFolder: FC<{ userId: number }> = ({ userId }) => {
   const { isOpen, onToggle, onClose } = useDisclosure()
 
   const [savingData, setSavingData] = useState(false)
@@ -34,21 +32,19 @@ export const CreateFolder = () => {
     const { target } = e
     const title: string = target.title.value
 
-    const user = session?.user as iUser
-
-    if (user) {
+    if (userId) {
       try {
         const createdFolder = await fetch(`api/folders`, {
           method: 'POST',
           body: JSON.stringify({
             title,
-            userId: user.id,
+            userId: userId,
           }),
         })
 
         const folder = await createdFolder.json()
-        console.log({ folder })
-        mutate(`/api/folders?userId=${user.id}`)
+
+        mutate(`/api/folders?userId=${userId}`)
         setSavingData(false)
         onClose()
       } catch (error: any) {

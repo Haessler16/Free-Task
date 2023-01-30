@@ -24,6 +24,6 @@ export const useGetNotes = ({ fallback, folderId }: iUseGetNotesProps) => {
       fallbackData: fallback,
     },
   )
-  console.log({ folderId })
+
   return { notesData: data, isLoading, error, session }
 }

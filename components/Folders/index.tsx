@@ -19,8 +19,10 @@ import {
 } from '@chakra-ui/react'
 import { DeleteButton } from 'components/common/Button/Delete'
 import { EditableControls } from 'components/common/EditableControls'
+import { useSession } from 'next-auth/react'
 import { Dispatch, FC, SetStateAction, useState } from 'react'
 import { iFolder } from 'utils/interfaces/folder'
+import { iUser } from 'utils/interfaces/user'
 import { CreateFolder } from './CreateFolder'
 
 interface iFolderProps {
@@ -35,7 +37,7 @@ export const Folders: FC<iFolderProps> = ({
   folders,
 }) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
-
+  const { data: session } = useSession()
   // const [showForm, setShowForm] = useState(false)
 
   const selectFolder = (id: number | null) => {
@@ -129,7 +131,8 @@ export const Folders: FC<iFolderProps> = ({
                         title='Folder'
                         id={folder.id}
                         type='rounded'
-                        deleteUrl='/api/folders'></DeleteButton>
+                        deleteUrl='/api/folders'
+                        userId={(session?.user as iUser).id}></DeleteButton>
                     </>
                   </Flex>
                 )
@@ -142,7 +145,7 @@ export const Folders: FC<iFolderProps> = ({
           </ModalBody>
 
           <ModalFooter justifyContent='center'>
-            <CreateFolder />
+            <CreateFolder userId={(session?.user as iUser).id} />
           </ModalFooter>
         </ModalContent>
       </Modal>

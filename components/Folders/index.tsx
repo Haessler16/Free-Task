@@ -47,7 +47,6 @@ export const Folders: FC<iFolderProps> = ({
   if (!folders) {
     return <h1>No data</h1>
   }
-  console.log({ folders })
 
   return (
     <Flex gap='5px'>
@@ -60,7 +59,6 @@ export const Folders: FC<iFolderProps> = ({
       </Tag>
 
       {folders.map((folder) => {
-        // console.log({ folder })
         return (
           <Tag
             size='lg'

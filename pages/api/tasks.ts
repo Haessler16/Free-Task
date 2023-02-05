@@ -1,7 +1,7 @@
-import prisma from 'lib/prisma'
 import type { NextApiRequest, NextApiResponse } from 'next'
+import prisma from 'lib/prisma'
 
-export default async function handleFolders(
+export default async function handleTasks(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
@@ -11,57 +11,54 @@ export default async function handleFolders(
 
   if (req.method === 'GET') {
     if (typeof query.userId === 'string') {
-      const folders = await prisma.folder.findMany({
+      const tasks = await prisma.task.findMany({
         where: { userId: Number(query.userId) },
       })
 
-      res.json(folders)
+      res.json(tasks)
       return
     } else if (typeof query.id === 'string') {
-      const folders = await prisma.folder.findUnique({
+      const task = await prisma.task.findUnique({
         where: { id: Number(query.id) },
       })
 
-      res.json(folders)
+      res.json(task)
       return
     } else {
-      const folders = await prisma.folder.findMany()
-
-      res.json(folders)
-      return
+      return []
     }
   }
 
   if (req.method === 'POST') {
-    console.log({ title, userId })
-    const folders = await prisma.folder.create({
-      data: { title, userId },
+    const task = await prisma.task.create({
+      data: {
+        title,
+        userId,
+      },
     })
 
-    res.json(folders)
+    res.json(task)
     return
   }
 
   if (req.method === 'PUT') {
-    const folders = await prisma.folder.update({
+    const task = await prisma.task.update({
       where: { id: id },
-      data: { title },
+      data: { title, userId },
     })
 
-    res.json(folders)
+    res.json(task)
     return
   }
 
   if (req.method === 'DELETE') {
-    const folders = await prisma.folder.delete({ where: { id: id } })
+    const task = await prisma.task.delete({ where: { id: id } })
 
-    res.json(folders)
+    res.json(task)
     return
   }
 }
 
-// function getAllUser(req: NextApiRequest) {}
-// function getOneUser(req: NextApiRequest) {}
 // function createUser(req: NextApiRequest) {}
 // function updateUser(req: NextApiRequest) {}
 // function deleteUser(req: NextApiRequest) {}

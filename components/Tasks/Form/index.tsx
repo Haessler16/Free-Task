@@ -10,26 +10,18 @@ import {
   FormLabel,
   Heading,
   Input,
-  Textarea,
 } from '@chakra-ui/react'
 import { ArrowBackIcon } from '@chakra-ui/icons'
 
 import { iUser } from 'utils/interfaces/user'
 import { mutate } from 'swr'
-import { iFolder } from 'utils/interfaces/folder'
-import { SelectFolders } from 'components/common/Select/Folders'
 
-interface iFormToNotes {
+interface iFormToTasks {
   setShowForm: (state: boolean) => void
   user: iUser
-  folders: iFolder[] | undefined
 }
 
-export const FormToNotes: FC<iFormToNotes> = ({
-  setShowForm,
-  user,
-  folders,
-}) => {
+export const FormToTask: FC<iFormToTasks> = ({ setShowForm, user }) => {
   const [savingData, setSavingData] = useState(false)
 
   const handleSubmit = async (e: { preventDefault?: any; target?: any }) => {
@@ -38,28 +30,20 @@ export const FormToNotes: FC<iFormToNotes> = ({
 
     const { target } = e
     const title: string = target.title.value
-    const description: string = target.description.value
-    const characters: number = title.concat(description).length
-    let folderId = target.folderId.value
-
-    folderId = isNaN(Number(folderId)) ? 0 : Number(folderId)
 
     if (user) {
       try {
-        const createdNote = await fetch(`api/notes`, {
+        const createdTask = await fetch(`api/tasks`, {
           method: 'POST',
           body: JSON.stringify({
             title,
             userId: user.id,
-            description,
-            characters,
-            folderId,
           }),
         })
 
-        const note = await createdNote.json()
-        if (note) {
-          mutate(`/api/notes?userId=${user.id}&folderId=${0}`)
+        const task = await createdTask.json()
+        if (task) {
+          mutate(`/api/tasks?userId=${user.id}`)
           setSavingData(false)
           setShowForm(false)
         }
@@ -82,7 +66,7 @@ export const FormToNotes: FC<iFormToNotes> = ({
       <Center h='calc(100vh - 200px)'>
         <Card w='clamp(270px,50%, 400px)'>
           <CardHeader>
-            <Heading textAlign='center'>Create a new note</Heading>
+            <Heading textAlign='center'>Create a new task</Heading>
           </CardHeader>
 
           <CardBody>
@@ -90,19 +74,6 @@ export const FormToNotes: FC<iFormToNotes> = ({
               <FormControl px={5}>
                 <FormLabel>Title</FormLabel>
                 <Input type='text' name='title' required={true} />
-
-                <FormLabel>Description</FormLabel>
-                <Textarea
-                  name='description'
-                  placeholder='Write here some description'
-                />
-
-                {folders && (
-                  <>
-                    <FormLabel>Folders</FormLabel>
-                    <SelectFolders folders={folders} />
-                  </>
-                )}
               </FormControl>
 
               <Center mt={6}>

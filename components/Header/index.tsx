@@ -116,7 +116,9 @@ export const Header = () => {
 
               <MenuDivider />
 
-              <MenuItem onClick={() => signOut()}>Sign out</MenuItem>
+              <MenuItem color='red' onClick={() => signOut()}>
+                Sign out
+              </MenuItem>
             </MenuList>
           </Menu>
         </Flex>

@@ -44,7 +44,6 @@ export const authOptions = {
 
         const user = await res.json()
 
-        console.log({ user })
         // If no error and we have user data, return it
         if (res.ok && user) {
           return user
@@ -64,15 +63,17 @@ export const authOptions = {
       clientSecret: process.env.GOOGLE_SECRET!,
     }),
   ],
+
   callbacks: {
-    async jwt({ token, account, profile }: any) {
+    async jwt({ token, account }: any) {
       // Persist the OAuth access_token and or the user id to the token right after signin
       if (account) {
         token.provider = account.provider
       }
-      // console.log({ token, account, profile })
+
       return token
     },
+
     async session({ session, token }: any) {
       // Send properties to the client, like an access_token and user id from a provider.
 
@@ -98,7 +99,6 @@ export const authOptions = {
         session.user.role = oneUser?.role
       }
 
-      // console.log({ session })
       return session
     },
   },

@@ -1,5 +1,5 @@
-import prisma from 'lib/prisma'
 import type { NextApiRequest, NextApiResponse } from 'next'
+import prisma from 'lib/prisma'
 
 export default async function handleNotes(
   req: NextApiRequest,
@@ -30,7 +30,7 @@ export default async function handleNotes(
     return
   }
 
-  if (req.method === 'UPDATE') {
+  if (req.method === 'PUT') {
     const notes = await prisma.notes.update({
       where: { id: id },
       data: { title, description, characters, userId, folderId },

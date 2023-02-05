@@ -1,3 +1,4 @@
+import { FC, useState } from 'react'
 import {
   MenuItem,
   Modal,
@@ -10,19 +11,51 @@ import {
   Text,
   Avatar,
   HStack,
+  Editable,
+  EditablePreview,
+  EditableInput,
+  ModalFooter,
+  Button,
+  useToast,
 } from '@chakra-ui/react'
 import { DeleteButton } from 'components/common/Button/Delete'
+import { EditableControls } from 'components/common/EditableControls'
+import { SelectComponent } from 'components/common/Select'
 
-import { FC } from 'react'
 import { iUser } from 'utils/interfaces/user'
 
 export const ManageUser: FC<{ user: iUser }> = ({ user }) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
+  const [isChanged, setIsChanged] = useState(false)
+  const toast = useToast()
 
-  // console.log({ user })
-  // if(!session){
-  //   return <p>no session</p>
-  // }
+  const handleSubmit = async (e: { preventDefault?: any; target?: any }) => {
+    e.preventDefault()
+    const { target } = e
+    const name = target.name.value
+    const role = target.role.value
+
+    const data = await fetch('api/user', {
+      method: 'PUT',
+      body: JSON.stringify({ name, role, id: user.id }),
+    })
+
+    const updatedUser = await data.json()
+
+    if (updatedUser) {
+      const event = new Event('visibilitychange')
+      document.dispatchEvent(event)
+      toast({
+        title: 'User updated.',
+        description: `${name} you have updated successfully you user`,
+        status: 'success',
+        duration: 9000,
+        isClosable: true,
+      })
+    }
+    // console.log({ updatedUser })
+  }
+
   return (
     <>
       <MenuItem onClick={onOpen}>Manage User</MenuItem>
@@ -34,26 +67,45 @@ export const ManageUser: FC<{ user: iUser }> = ({ user }) => {
 
           <ModalCloseButton />
 
-          <ModalBody>
-            <HStack justify='space-between'>
-              <Avatar name={user.name} src={user.image} />
-              <DeleteButton title='User' id={user.id} deleteUrl='/api/user' />
-            </HStack>
+          <form onSubmit={handleSubmit}>
+            <ModalBody>
+              <HStack justify='space-between'>
+                <Avatar name={user.name} src={user.image} />
+                <DeleteButton title='User' id={user.id} deleteUrl='/api/user' />
+              </HStack>
 
-            <Text>Name: {user.name}</Text>
-            <Text>Email: {user.email}</Text>
-            <Text>Role: {user.role}</Text>
-            {user.provider !== 'credentials' && (
-              <Text>Sign in with: {user.provider}</Text>
-            )}
-          </ModalBody>
+              <Editable
+                defaultValue={user.name}
+                display='flex'
+                justifyContent='space-between'
+                alignItems='center'
+                gap='14px'
+                fontSize='5xl'>
+                <EditablePreview />
+                <EditableInput name='name' />
+                <EditableControls handleClick={() => setIsChanged(true)} />
+              </Editable>
 
-          {/* <ModalFooter>
-        <Button colorScheme='blue' mr={3} onClick={onClose}>
-          Close
-        </Button>
-        <Button variant='ghost'>Secondary Action</Button>
-      </ModalFooter> */}
+              <Text>Email: {user.email}</Text>
+
+              <SelectComponent
+                data={['admin', 'edit', 'read']}
+                name='role'
+                defaultValue={user.role}
+                handleChange={() => setIsChanged(true)}
+              />
+
+              {user.provider !== 'credentials' && (
+                <Text>Sign in with: {user.provider}</Text>
+              )}
+            </ModalBody>
+
+            <ModalFooter justifyContent='center'>
+              <Button type='submit' variant='blue' mr={3}>
+                Update
+              </Button>
+            </ModalFooter>
+          </form>
         </ModalContent>
       </Modal>
     </>

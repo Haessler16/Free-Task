@@ -1,11 +1,11 @@
-import { FC } from 'react'
+import { useSession } from 'next-auth/react'
+
+// INTERFACES
 import { iNote } from 'utils/interfaces/notes'
 import { iUser } from 'utils/interfaces/user'
 
 import fetcher from 'utils/fetcher'
 import useSWR from 'swr'
-import { useSession } from 'next-auth/react'
-import { iFolder } from 'utils/interfaces/folder'
 
 interface iUseGetNotesProps {
   fallback: iNote[]

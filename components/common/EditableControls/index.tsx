@@ -1,3 +1,4 @@
+import { FC } from 'react'
 import {
   Flex,
   useEditableControls,
@@ -6,7 +7,9 @@ import {
 } from '@chakra-ui/react'
 import { CheckIcon, CloseIcon, EditIcon } from '@chakra-ui/icons'
 
-export function EditableControls() {
+export const EditableControls: FC<{ handleClick?: () => void }> = ({
+  handleClick,
+}) => {
   const {
     isEditing,
     getSubmitButtonProps,
@@ -19,6 +22,7 @@ export function EditableControls() {
       <IconButton
         icon={<CheckIcon />}
         aria-label='check'
+        onClick={handleClick}
         {...getSubmitButtonProps()}
       />
       <IconButton

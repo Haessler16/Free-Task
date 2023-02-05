@@ -1,7 +1,8 @@
 import { iNote } from './notes'
 import { iTask } from './task'
 
-type tRole = 'admin' | 'edit' | 'read'
+export type tRole = 'admin' | 'edit' | 'read'
+
 export interface iUser {
   id: number
   name: string

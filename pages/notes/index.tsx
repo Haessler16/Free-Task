@@ -1,7 +1,7 @@
+import { NextPage } from 'next'
 import Head from 'next/head'
-import { MainLayout } from 'layouts/main'
-import { NotesList } from 'components/Notes/List'
-import { iNote } from 'utils/interfaces/notes'
+
+import { useMemo, useState } from 'react'
 import {
   Box,
   Text,
@@ -9,21 +9,28 @@ import {
   useMediaQuery,
   Spinner,
   Center,
+  useConst,
 } from '@chakra-ui/react'
-import { useState } from 'react'
-import { FormToNotes } from 'components/Notes/Form'
 
-import { AddButton } from 'components/AddButton'
 import { getSession, GetSessionParams, useSession } from 'next-auth/react'
+import { MainLayout } from 'layouts/main'
 
-import { NextPage } from 'next'
+// COMPONENTS
+import { FormToNotes } from 'components/Notes/Form'
+import { AddButton } from 'components/AddButton'
 import { NotesHeader } from 'components/Notes/Header'
+import { NotesList } from 'components/Notes/List'
+
+// INTERFACES
 import { iUser } from 'utils/interfaces/user'
+import { iNote } from 'utils/interfaces/notes'
+import { iFolder } from 'utils/interfaces/folder'
+
+// HOOKS
+import { useGetNotes } from 'hooks/useGetNotes'
+import { useGetFolders } from 'hooks/useGetFolders'
 
 import prisma from 'lib/prisma'
-import { useGetNotes } from 'hooks/useGetNotes'
-import { iFolder } from 'utils/interfaces/folder'
-import { useGetFolders } from 'hooks/useGetFolders'
 
 interface iNotesProps {
   notes: iNote[]
@@ -74,12 +81,14 @@ const Notes: NextPage<iNotesProps> = ({ notes, folders }) => {
     fallback: false, // return false on the server, and re-evaluate on the client side
   })
 
+  //GET DATA
   const { notesData, isLoading, error, session } = useGetNotes({
     fallback: notes,
     folderId: folderSelected,
   })
-
   const { foldersData } = useGetFolders({ fallback: folders })
+
+  const user = useMemo(() => session?.user as iUser, [session?.user])
 
   const addNotesForm = () => {
     setShowForm(true)
@@ -132,8 +141,9 @@ const Notes: NextPage<iNotesProps> = ({ notes, folders }) => {
                     <NotesList
                       key={note.id}
                       note={note}
-                      userId={(session?.user as iUser).id}
+                      userId={user.id}
                       folderId={folderSelected}
+                      userRole={user.role}
                     />
                   )
                 })}
@@ -149,7 +159,7 @@ const Notes: NextPage<iNotesProps> = ({ notes, folders }) => {
         ) : (
           <FormToNotes
             setShowForm={setShowForm}
-            user={session?.user as iUser}
+            user={user}
             folders={foldersData}
           />
         )}

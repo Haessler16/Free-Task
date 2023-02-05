@@ -34,10 +34,10 @@ export default async function handleUser(
     return
   }
 
-  if (req.method === 'UPDATE') {
+  if (req.method === 'PUT') {
     const user = await prisma.user.update({
       where: { id: id },
-      data: { name, email, image, role },
+      data: { name, role },
     })
 
     res.json(user)

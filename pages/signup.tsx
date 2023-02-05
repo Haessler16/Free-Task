@@ -45,7 +45,6 @@ const Signup: NextPage = () => {
     const getOne = await fetch(`api/user?type=one&email=${email}`)
     const isUserAlReady = await getOne.json()
 
-    console.log({ isUserAlReady })
     if (!isUserAlReady) {
       const res = await fetch('api/user', {
         method: 'POST',

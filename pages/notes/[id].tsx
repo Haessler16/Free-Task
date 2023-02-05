@@ -1,9 +1,10 @@
+import { useMemo } from 'react'
+
 import { GetServerSidePropsContext, NextPage } from 'next'
-import { getSession, useSession } from 'next-auth/react'
 import Head from 'next/head'
 import NextLink from 'next/link'
 
-// import { useRef } from 'react'
+import { getSession, useSession } from 'next-auth/react'
 
 import {
   Card,
@@ -20,7 +21,6 @@ import {
   CardFooter,
   Spinner,
 } from '@chakra-ui/react'
-
 import { ArrowBackIcon } from '@chakra-ui/icons'
 
 import { DeleteButton } from 'components/common/Button/Delete'
@@ -29,10 +29,11 @@ import { MainLayout } from 'layouts/main'
 import { iNote } from 'utils/interfaces/notes'
 import { EditableControls } from 'components/common/EditableControls'
 
-import prisma from 'lib/prisma'
 import { iUser } from 'utils/interfaces/user'
 import { iFolder } from 'utils/interfaces/folder'
 import { SelectFolders } from 'components/common/Select/Folders'
+
+import prisma from 'lib/prisma'
 
 interface iNoteProps {
   note: iNote | undefined
@@ -78,6 +79,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
 const Note: NextPage<iNoteProps> = ({ note, folders }) => {
   const { data: session, status } = useSession()
+  const user = useMemo(() => session?.user as iUser, [session?.user])
 
   const handleSubmit = async (e: {
     preventDefault: () => void
@@ -130,12 +132,14 @@ const Note: NextPage<iNoteProps> = ({ note, folders }) => {
             Go back
           </Button>
 
-          <DeleteButton
-            title='Note'
-            id={note.id}
-            deleteUrl='/api/notes'
-            userId={(session?.user as iUser).id}
-          />
+          {user.role === 'admin' && (
+            <DeleteButton
+              title='Note'
+              id={note.id}
+              deleteUrl='/api/notes'
+              userId={user.id}
+            />
+          )}
         </Flex>
 
         <Center h='calc(100vh - 200px)'>
@@ -154,7 +158,7 @@ const Note: NextPage<iNoteProps> = ({ note, folders }) => {
                   fontSize='5xl'>
                   <EditablePreview />
                   <EditableInput name='title' />
-                  <EditableControls />
+                  {user.role !== 'read' && <EditableControls />}
                 </Editable>
 
                 <Flex h='30px' gap='5px' align='center' ml='10px'>
@@ -175,19 +179,21 @@ const Note: NextPage<iNoteProps> = ({ note, folders }) => {
                   gap='14px'
                   fontSize='lg'
                   mt='3'>
-                  <EditablePreview />
+                  <EditablePreview noOfLines={[1, 2, 3, -1]} />
                   <EditableTextarea name='description' />
-                  <EditableControls />
+                  {user.role !== 'read' && <EditableControls />}
                 </Editable>
 
                 <SelectFolders folders={folders} folderId={note.folderId} />
               </CardBody>
 
-              <CardFooter justify='end' p={2}>
-                <Button type='submit' variant='blue'>
-                  Done
-                </Button>
-              </CardFooter>
+              {user.role !== 'read' && (
+                <CardFooter justify='center' p={2}>
+                  <Button type='submit' variant='blue'>
+                    Done
+                  </Button>
+                </CardFooter>
+              )}
             </form>
           </Card>
         </Center>

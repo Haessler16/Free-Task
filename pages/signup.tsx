@@ -1,36 +1,37 @@
+import { useState } from 'react'
 import type { NextPage } from 'next'
+
 import NextLink from 'next/link'
 import Head from 'next/head'
+import Image from 'next/image'
+import { useRouter } from 'next/router'
 
 import {
   FormControl,
   FormLabel,
-  // FormErrorMessage,
-  // FormHelperText,
   Input,
   Select,
   Button,
   Center,
   Card,
   chakra,
-  Heading,
   Link,
   CardBody,
   CardFooter,
   Text,
+  CardHeader,
+  Heading,
 } from '@chakra-ui/react'
-import { useState } from 'react'
+
 import { signIn } from 'next-auth/react'
 import { hashPassword } from 'lib/bcrypt'
-import { useRouter } from 'next/router'
+
+import logoNoBg from '/public/logoNoBackground.png'
 
 const Signup: NextPage = () => {
-  // const [name, setName] = useState('')
-  // const [email, setEmail] = useState('')
   const router = useRouter()
-  // const [password, setPassword] = useState('')
+
   const [allReadyUser, setAllReadyUser] = useState(false)
-  // const [img, setImg] = useState('')
 
   const handleSubmit = async (e: { preventDefault?: any; target: any }) => {
     e.preventDefault()
@@ -91,11 +92,17 @@ const Signup: NextPage = () => {
           fontSize='lg'
           fontWeight='bold'
           _hover={{ textDecoration: 'none' }}>
-          <Heading>Free Task</Heading>
+          <Image
+            src={logoNoBg}
+            alt='Free Task Icon'
+            width={140}
+            height={40}
+            priority
+          />
         </Link>
 
         <>
-          <Link onClick={() => signIn()} fontWeight='bold'>
+          <Link as={Button} onClick={() => signIn()} fontWeight='bold'>
             Sign In
           </Link>
         </>
@@ -103,7 +110,13 @@ const Signup: NextPage = () => {
 
       <main>
         <Center h='calc(100vh - 80px)'>
-          <Card px='6' py='10' w='clamp(270px,50%, 400px)'>
+          <Card px='6' pt='10' w='clamp(270px,50%, 400px)'>
+            <CardHeader py={0}>
+              <Heading size='lg' textAlign='center'>
+                Register as a new user
+              </Heading>
+            </CardHeader>
+
             <CardBody>
               <form onSubmit={handleSubmit}>
                 <FormControl>
@@ -115,7 +128,7 @@ const Signup: NextPage = () => {
                     // onChange={(res) => setName(res.target.value)}
                   />
 
-                  <FormLabel>Email address</FormLabel>
+                  <FormLabel mt='2'>Email address</FormLabel>
                   <Input
                     name='email'
                     type='email'
@@ -123,7 +136,7 @@ const Signup: NextPage = () => {
                     // onChange={(res) => setEmail(res.target.value)}
                   />
 
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel mt='2'>Password</FormLabel>
                   <Input
                     name='password'
                     type='password'
@@ -131,7 +144,7 @@ const Signup: NextPage = () => {
                     // onChange={(res) => setPassword(res.target.value)}
                   />
 
-                  <FormLabel>Role</FormLabel>
+                  <FormLabel mt='2'>Role</FormLabel>
                   <Select
                     name='role'
                     // onChange={(res) => setRole(res.target.value)}
@@ -149,6 +162,7 @@ const Signup: NextPage = () => {
                 </FormControl>
               </form>
             </CardBody>
+
             {allReadyUser && (
               <CardFooter>
                 <Text color='red'>That user is all ready registered</Text>

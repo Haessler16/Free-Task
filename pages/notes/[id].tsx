@@ -143,7 +143,7 @@ const Note: NextPage<iNoteProps> = ({ note, folders }) => {
         </Flex>
 
         <Center h='calc(100vh - 200px)'>
-          <Card p='6' w='clamp(270px,50%,440px)'>
+          <Card px='6' pb='6' w='clamp(270px,50%,440px)'>
             {/* <CardHeader>
               <Heading textAlign='center'>Create a new note</Heading>
             </CardHeader> */}

@@ -59,7 +59,7 @@ export const Header = () => {
       boxShadow='lg'
       minH='40px'
       py={3}
-      px={4}
+      px={5}
       mb={3}>
       <Image
         src={logoNoBg}

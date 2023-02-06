@@ -4,12 +4,11 @@ import Head from 'next/head'
 import { useMemo, useState } from 'react'
 import {
   Box,
-  Text,
   Grid,
   useMediaQuery,
   Spinner,
   Center,
-  useConst,
+  Heading,
 } from '@chakra-ui/react'
 
 import { getSession, GetSessionParams, useSession } from 'next-auth/react'
@@ -149,9 +148,9 @@ const Notes: NextPage<iNotesProps> = ({ notes, folders }) => {
                 })}
               </Grid>
             ) : (
-              <Text textAlign='center' fontSize='lg'>
+              <Heading textAlign='center' fontSize='lg'>
                 No Notes, try to create a new one.
-              </Text>
+              </Heading>
             )}
 
             {isLessThan800 && <AddButton handleAdd={addNotesForm} />}

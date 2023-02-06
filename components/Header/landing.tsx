@@ -34,8 +34,13 @@ export const LandingHeader = () => {
       bg='#09f'
       boxShadow='lg'
       p={3}>
-      <Image src={logoNoBg} alt='Free Task Icon' width={140} height={140} />
-      {/* <Heading>Free Task</Heading> */}
+      <Image
+        src={logoNoBg}
+        alt='Free Task Icon'
+        width={140}
+        height={40}
+        priority
+      />
 
       {!isLessThan800 && (
         <Center gap='4'>

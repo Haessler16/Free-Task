@@ -48,6 +48,7 @@ export const ManageUser: FC<{ user: iUser }> = ({ user }) => {
       toast({
         title: 'User updated.',
         description: `${name} you have updated successfully you user`,
+        position: 'top-right',
         status: 'success',
         duration: 9000,
         isClosable: true,

@@ -80,7 +80,7 @@ export const FormToNotes: FC<iFormToNotes> = ({
       </Button>
 
       <Center h='calc(100vh - 200px)'>
-        <Card w='clamp(270px,50%, 400px)'>
+        <Card w='clamp(270px, 50%, 400px)'>
           <CardHeader>
             <Heading textAlign='center'>Create a new note</Heading>
           </CardHeader>

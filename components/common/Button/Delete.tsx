@@ -55,7 +55,7 @@ export const DeleteButton: FC<iDeleteButton> = ({
         : title === 'Note'
         ? mutate(`${deleteUrl}?userId=${userId}&folderId=${folderId}`)
         : mutate(`${deleteUrl}?userId=${userId}`)
-      router.push('/notes')
+      title === 'Task' ? router.push('/tasks') : router.push('/notes')
       onClose()
     }
   }

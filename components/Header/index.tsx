@@ -48,8 +48,6 @@ export const Header = () => {
     return <h1>none</h1>
   }
 
-  // console.log({ session })
-
   return (
     <chakra.header
       display='flex'
@@ -86,14 +84,14 @@ export const Header = () => {
 
           <Link
             as={NextLink}
-            href='/task'
+            href='/tasks'
             fontSize='lg'
             fontWeight='bold'
             color='white'
             textDecoration={
-              router.pathname.includes('task') ? 'underline' : 'none'
+              router.pathname.includes('tasks') ? 'underline' : 'none'
             }>
-            Task
+            Tasks
           </Link>
 
           <Button
@@ -151,16 +149,11 @@ export const Header = () => {
 
                 <Link
                   as={NextLink}
-                  href='/task'
+                  href='/tasks'
                   fontSize='lg'
                   fontWeight='bold'>
-                  Task
+                  Tasks
                 </Link>
-
-                {/* <MenuItem as='div' justifyContent='space-between'> */}
-                {/* <Text fontSize='lg' fontWeight='bold'>
-                Theme:
-              </Text> */}
 
                 <Button
                   onClick={toggleColorMode}

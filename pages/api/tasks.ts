@@ -5,7 +5,7 @@ export default async function handleTasks(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const { id, title, userId } = req.body !== '' && JSON.parse(req.body)
+  const { id, title, userId, done } = req.body !== '' && JSON.parse(req.body)
 
   const { query } = req
 
@@ -44,7 +44,7 @@ export default async function handleTasks(
   if (req.method === 'PUT') {
     const task = await prisma.task.update({
       where: { id: id },
-      data: { title, userId },
+      data: { title, done },
     })
 
     res.json(task)

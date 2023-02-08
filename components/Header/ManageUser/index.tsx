@@ -35,7 +35,7 @@ export const ManageUser: FC<{ user: iUser }> = ({ user }) => {
     const name = target.name.value
     const role = target.role.value
 
-    const data = await fetch('api/user', {
+    const data = await fetch('/api/user', {
       method: 'PUT',
       body: JSON.stringify({ name, role, id: user.id }),
     })
@@ -45,6 +45,7 @@ export const ManageUser: FC<{ user: iUser }> = ({ user }) => {
     if (updatedUser) {
       const event = new Event('visibilitychange')
       document.dispatchEvent(event)
+
       toast({
         title: 'User updated.',
         description: `${name} you have updated successfully you user`,

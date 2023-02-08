@@ -88,8 +88,6 @@ const Task: NextPage<{ tasksInit: iTask[] }> = ({ tasksInit }) => {
     return <h1>No data</h1>
   }
 
-  console.log({ tasksData })
-
   return (
     <MainLayout>
       <Head>

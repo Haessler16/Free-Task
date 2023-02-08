@@ -1,7 +1,7 @@
 import { NextPage } from 'next'
 import Head from 'next/head'
 
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import {
   Box,
   Grid,
@@ -11,7 +11,7 @@ import {
   Heading,
 } from '@chakra-ui/react'
 
-import { getSession, GetSessionParams, useSession } from 'next-auth/react'
+import { getSession, GetSessionParams } from 'next-auth/react'
 import { MainLayout } from 'layouts/main'
 
 // COMPONENTS
@@ -81,19 +81,17 @@ const Notes: NextPage<iNotesProps> = ({ notes, folders }) => {
   })
 
   //GET DATA
-  const { notesData, isLoading, error, session } = useGetNotes({
+  const { notesData, isLoading, error, user } = useGetNotes({
     fallback: notes,
     folderId: folderSelected,
   })
   const { foldersData } = useGetFolders({ fallback: folders })
 
-  const user = useMemo(() => session?.user as iUser, [session?.user])
-
   const addNotesForm = () => {
     setShowForm(true)
   }
 
-  if (isLoading || !session) {
+  if (isLoading || !user) {
     return (
       <Center h='100vh'>
         <Spinner

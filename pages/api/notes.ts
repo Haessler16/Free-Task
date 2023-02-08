@@ -32,7 +32,7 @@ export default async function handleNotes(
 
   if (req.method === 'PUT') {
     const notes = await prisma.notes.update({
-      where: { id: id },
+      where: { id },
       data: { title, description, characters, folderId },
     })
 

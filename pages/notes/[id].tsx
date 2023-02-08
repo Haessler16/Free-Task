@@ -20,6 +20,7 @@ import {
   Divider,
   CardFooter,
   Spinner,
+  useToast,
 } from '@chakra-ui/react'
 import { ArrowBackIcon } from '@chakra-ui/icons'
 
@@ -80,6 +81,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 const Note: NextPage<iNoteProps> = ({ note, folders }) => {
   const { data: session, status } = useSession()
   const user = useMemo(() => session?.user as iUser, [session?.user])
+  const toast = useToast()
 
   const handleSubmit = async (e: {
     preventDefault: () => void
@@ -89,9 +91,37 @@ const Note: NextPage<iNoteProps> = ({ note, folders }) => {
 
     const title = e.target.title.value
     const description = e.target.description.value
-    const folderId = e.target.folderId.value
+    const characters: number = title.concat(description).length
+    const folderId =
+      e.target.folderId.value === '0' ? null : Number(e.target.folderId.value)
 
-    console.log({ description, title, folderId })
+    try {
+      const data = await fetch('/api/notes', {
+        method: 'PUT',
+        body: JSON.stringify({
+          description,
+          title,
+          folderId,
+          characters,
+          id: note?.id,
+        }),
+      })
+
+      const noteUpdated = await data.json()
+
+      if (noteUpdated) {
+        toast({
+          title: 'Note updated.',
+          description: ` you have updated successfully this note`,
+          position: 'top-right',
+          status: 'success',
+          duration: 9000,
+          isClosable: true,
+        })
+      }
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   if (!session) {

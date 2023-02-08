@@ -6,6 +6,7 @@ import { iUser } from 'utils/interfaces/user'
 
 import fetcher from 'utils/fetcher'
 import useSWR from 'swr'
+import { useUser } from './useUser'
 
 interface iUseGetNotesProps {
   fallback: iNote[]
@@ -13,17 +14,15 @@ interface iUseGetNotesProps {
 }
 
 export const useGetNotes = ({ fallback, folderId }: iUseGetNotesProps) => {
-  const { data: session } = useSession()
+  const { user } = useUser()
 
   const { data, isLoading, error } = useSWR<iNote[]>(
-    session
-      ? `/api/notes?userId=${(session?.user as iUser).id}&folderId=${folderId}`
-      : null,
+    user ? `/api/notes?userId=${user.id}&folderId=${folderId}` : null,
     fetcher,
     {
       fallbackData: fallback,
     },
   )
 
-  return { notesData: data, isLoading, error, session }
+  return { notesData: data, isLoading, error, user }
 }

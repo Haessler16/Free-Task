@@ -1,3 +1,4 @@
+import { Dispatch, FC, SetStateAction, useState } from 'react'
 import { CalendarIcon } from '@chakra-ui/icons'
 import {
   Flex,
@@ -16,14 +17,18 @@ import {
   Editable,
   EditableInput,
   EditablePreview,
+  useToast,
 } from '@chakra-ui/react'
+
+// COMPONENTS
 import { DeleteButton } from 'components/common/Button/Delete'
 import { EditableControls } from 'components/common/EditableControls'
-import { useSession } from 'next-auth/react'
-import { Dispatch, FC, SetStateAction, useState } from 'react'
-import { iFolder } from 'utils/interfaces/folder'
-import { iUser } from 'utils/interfaces/user'
 import { CreateFolder } from './CreateFolder'
+
+import { useUser } from 'hooks/useUser'
+
+import { mutate } from 'swr'
+import { iFolder } from 'utils/interfaces/folder'
 
 interface iFolderProps {
   folderSelected: number | null
@@ -37,8 +42,37 @@ export const Folders: FC<iFolderProps> = ({
   folders,
 }) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const { data: session } = useSession()
-  // const [showForm, setShowForm] = useState(false)
+  const { user } = useUser()
+  const [title, setTitle] = useState('')
+  const [folderIdSelected, setFolderIdSelected] = useState(0)
+
+  const toast = useToast()
+
+  const handleUpdate = async () => {
+    try {
+      const data = await fetch('/api/folders', {
+        method: 'PUT',
+        body: JSON.stringify({ title, id: folderIdSelected }),
+      })
+
+      const folderUpdated = await data.json()
+
+      if (folderUpdated) {
+        mutate(`/api/folders?userId=${user.id}`)
+
+        toast({
+          title: 'Folder updated.',
+          description: ` you have updated successfully this folder`,
+          position: 'top-right',
+          status: 'success',
+          duration: 9000,
+          isClosable: true,
+        })
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   const selectFolder = (id: number | null) => {
     setFolderSelected(id)
@@ -121,8 +155,16 @@ export const Folders: FC<iFolderProps> = ({
                         alignItems='center'
                         gap={1}>
                         <EditablePreview />
-                        <EditableInput name='title' />
-                        <EditableControls />
+                        <EditableInput
+                          name='title'
+                          onChange={(e) => {
+                            setTimeout(() => {
+                              setTitle(e.target.value)
+                              setFolderIdSelected(folder.id)
+                            }, 500)
+                          }}
+                        />
+                        <EditableControls handleClick={handleUpdate} />
                       </Editable>
 
                       <DeleteButton
@@ -130,7 +172,7 @@ export const Folders: FC<iFolderProps> = ({
                         id={folder.id}
                         type='rounded'
                         deleteUrl='/api/folders'
-                        userId={(session?.user as iUser).id}></DeleteButton>
+                        userId={user.id}></DeleteButton>
                     </>
                   </Flex>
                 )
@@ -143,7 +185,7 @@ export const Folders: FC<iFolderProps> = ({
           </ModalBody>
 
           <ModalFooter justifyContent='center'>
-            <CreateFolder userId={(session?.user as iUser).id} />
+            <CreateFolder userId={user.id} />
           </ModalFooter>
         </ModalContent>
       </Modal>

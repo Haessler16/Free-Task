@@ -1,23 +1,22 @@
-import { useSession } from 'next-auth/react'
-
 import fetcher from 'utils/fetcher'
 import useSWR from 'swr'
 
 import { iFolder } from 'utils/interfaces/folder'
 import { iUser } from 'utils/interfaces/user'
+import { useUser } from './useUser'
 
 interface iUseGetFoldersProps {
   fallback: iFolder[]
 }
 
 export const useGetFolders = ({ fallback }: iUseGetFoldersProps) => {
-  const { data: session } = useSession()
+  const { user } = useUser()
   const { data, error, isLoading } = useSWR<iFolder[]>(
-    session ? `/api/folders?userId=${(session?.user as iUser).id}` : null,
+    user ? `/api/folders?userId=${user.id}` : null,
     fetcher,
     {
       fallbackData: fallback,
     },
   )
-  return { foldersData: data, isLoading, error, user: session?.user as iUser }
+  return { foldersData: data, isLoading, error, user }
 }

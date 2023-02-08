@@ -12,7 +12,6 @@ import {
   Editable,
   EditableInput,
   EditablePreview,
-  EditableTextarea,
   Button,
   CardBody,
   Flex,
@@ -20,15 +19,18 @@ import {
   Divider,
   CardFooter,
   Spinner,
+  useToast,
 } from '@chakra-ui/react'
 
 import { iTask } from 'utils/interfaces/task'
-import prisma from 'lib/prisma'
 import { iUser } from 'utils/interfaces/user'
 import { MainLayout } from 'layouts/main'
 import { ArrowBackIcon } from '@chakra-ui/icons'
 import { DeleteButton } from 'components/common/Button/Delete'
 import { EditableControls } from 'components/common/EditableControls'
+
+import prisma from 'lib/prisma'
+import { useUser } from 'hooks/useUser'
 
 interface iTaskProps {
   task: iTask | undefined
@@ -63,8 +65,8 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 }
 
 const Task: NextPage<iTaskProps> = ({ task }) => {
-  const { data: session, status } = useSession()
-  const user = useMemo(() => session?.user as iUser, [session?.user])
+  const { user } = useUser()
+  const toast = useToast()
 
   const handleSubmit = async (e: {
     preventDefault: () => void
@@ -74,10 +76,29 @@ const Task: NextPage<iTaskProps> = ({ task }) => {
 
     const title = e.target.title.value
 
-    console.log({ title })
+    const data = await fetch('/api/tasks', {
+      method: 'PUT',
+      body: JSON.stringify({
+        title,
+        id: task?.id,
+      }),
+    })
+
+    const taskUpdated = await data.json()
+
+    if (taskUpdated) {
+      toast({
+        title: 'Task updated.',
+        description: ` you have updated successfully this task`,
+        position: 'top-right',
+        status: 'success',
+        duration: 9000,
+        isClosable: true,
+      })
+    }
   }
 
-  if (!session) {
+  if (!user) {
     return (
       <Center h='100vh'>
         <Spinner

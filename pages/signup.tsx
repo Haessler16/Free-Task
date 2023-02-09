@@ -61,7 +61,6 @@ const Signup: NextPage = () => {
 
       const data = await res.json()
       if (data) {
-        console.log({ data })
         router.push('/notes')
       }
     } else {

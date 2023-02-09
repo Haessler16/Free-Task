@@ -46,16 +46,22 @@ export const DeleteButton: FC<iDeleteButton> = ({
     const isDeleted = await deleteOne.json()
 
     if (isDeleted) {
-      // if (title === 'User') await signOut()
-      // if (title === 'Note') await mutate(`${deleteUrl}?userId=${userId}&folderId=${folderId}`)
-      // if (title === 'Folder') await mutate(`${deleteUrl}?userId=${userId}`)
-      console.log({ title, userId })
-      title === 'User'
-        ? signOut()
-        : title === 'Note'
-        ? mutate(`${deleteUrl}?userId=${userId}&folderId=${folderId}`)
-        : mutate(`${deleteUrl}?userId=${userId}`)
+      if (title === 'User') {
+        signOut()
+      } else if (title === 'Note') {
+        mutate(`${deleteUrl}?userId=${userId}&folderId=${folderId}`)
+      } else {
+        mutate(`${deleteUrl}?userId=${userId}`)
+      }
+
+      // title === 'User'
+      //   ? signOut()
+      //   : title === 'Note'
+      //   ? mutate(`${deleteUrl}?userId=${userId}&folderId=${folderId}`)
+      //   : mutate(`${deleteUrl}?userId=${userId}`)
+
       title === 'Task' ? router.push('/tasks') : router.push('/notes')
+
       onClose()
     }
   }

@@ -34,7 +34,7 @@ model Folder {
   id     Int     @id @default(autoincrement())
   title  String
   notes  Notes[]
-  user   User?   @relation(fields: [userId], references: [id])
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId Int?
 }
 
@@ -44,7 +44,7 @@ model Notes {
   description String
   characters  Int
   createdAt   DateTime @default(now())
-  user        User     @relation(fields: [userId], references: [id])
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      Int
   folder      Folder?  @relation(fields: [folderId], references: [id])
   folderId    Int?
@@ -56,13 +56,13 @@ model Task {
   createdAt DateTime  @default(now())
   done      Boolean   @default(false)
   subtask   SubTask[]
-  user      User?     @relation(fields: [userId], references: [id])
+  user      User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    Int?
 }
 
 model SubTask {
   id     Int    @id @default(autoincrement())
   title  String
-  task   Task?  @relation(fields: [taskId], references: [id])
+  task   Task?  @relation(fields: [taskId], references: [id], onDelete: Cascade)
   taskId Int?
 }

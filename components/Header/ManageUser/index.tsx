@@ -55,7 +55,6 @@ export const ManageUser: FC<{ user: iUser }> = ({ user }) => {
         isClosable: true,
       })
     }
-    // console.log({ updatedUser })
   }
 
   return (
@@ -73,7 +72,7 @@ export const ManageUser: FC<{ user: iUser }> = ({ user }) => {
             <ModalBody>
               <HStack justify='space-between'>
                 <Avatar name={user.name} src={user.image} />
-                <DeleteButton title='User' id={user.id} deleteUrl='/api/user' />
+                <DeleteButton title='User' deleteUrl='/api/user' id={user.id} />
               </HStack>
 
               <Editable

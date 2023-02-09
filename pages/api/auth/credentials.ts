@@ -19,7 +19,6 @@ export default async function CredentialsAuth(
 
   // POST - ok
   const { email, password } = req.body
-  // console.log({ email, password })
 
   const getOne = await fetch(
     `${process.env.NEXTAUTH_URL}/api/user?type=one&email=${email}`,

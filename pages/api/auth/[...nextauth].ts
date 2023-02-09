@@ -65,10 +65,52 @@ export const authOptions = {
   ],
 
   callbacks: {
+    async signIn({ user, account, profile, email, credentials }: any) {
+      const isAllowedToSignIn = true
+
+      if (isAllowedToSignIn) {
+        const getOne = await fetch(
+          `${process.env.NEXTAUTH_URL}/api/user?type=one&email=${user.email}`,
+        )
+
+        const oneUser = await getOne.json()
+
+        if (account.provider !== 'credentials' && oneUser === null) {
+          const posted = await fetch(`${process.env.NEXTAUTH_URL}/api/user`, {
+            method: 'POST',
+            body: JSON.stringify({
+              name: user.name,
+              email: user.email,
+              image: user.image,
+              provider: account.provider,
+            }),
+          })
+
+          const bum = await posted.json()
+
+          account.id = bum.id
+          account.role = bum.role
+
+          return true
+        }
+
+        account.id = oneUser.id
+        account.role = oneUser.role
+
+        return true
+      } else {
+        // Return false to display a default error message
+        return false
+        // Or you can return a URL to redirect to:
+        // return '/unauthorized'
+      }
+    },
     async jwt({ token, account }: any) {
       // Persist the OAuth access_token and or the user id to the token right after signin
       if (account) {
         token.provider = account.provider
+        token.id = account.id
+        token.role = account.role
       }
 
       return token
@@ -79,24 +121,8 @@ export const authOptions = {
 
       if (session.user) {
         session.user.provider = token.provider
-        const getOne = await fetch(
-          `${process.env.NEXTAUTH_URL}/api/user?type=one&email=${session.user.email}`,
-        )
-        const oneUser = await getOne.json()
-
-        if (session.user.provider !== 'credentials' && oneUser === null) {
-          await fetch(`${process.env.NEXTAUTH_URL}/api/user`, {
-            method: 'POST',
-            body: JSON.stringify({
-              name: session.user.name,
-              email: session.user.email,
-              image: session.user.image,
-              provider: session.user.provider,
-            }),
-          })
-        }
-        session.user.id = oneUser?.id
-        session.user.role = oneUser?.role
+        session.user.id = token.id
+        session.user.role = token.role
       }
 
       return session

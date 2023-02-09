@@ -4,7 +4,6 @@ import type { NextPage } from 'next'
 import NextLink from 'next/link'
 import Head from 'next/head'
 import Image from 'next/image'
-import { useRouter } from 'next/router'
 
 import {
   FormControl,
@@ -23,14 +22,31 @@ import {
   Heading,
 } from '@chakra-ui/react'
 
-import { signIn } from 'next-auth/react'
+import { getSession, GetSessionParams, signIn } from 'next-auth/react'
 import { hashPassword } from 'lib/bcrypt'
 
 import logoNoBg from '/public/logoNoBackground.png'
 
-const Signup: NextPage = () => {
-  const router = useRouter()
+export async function getServerSideProps(
+  context: GetSessionParams | undefined,
+) {
+  const session = await getSession(context)
 
+  if (session) {
+    return {
+      redirect: {
+        destination: '/notes',
+        permanent: false,
+      },
+    }
+  }
+
+  return {
+    props: {},
+  }
+}
+
+const Signup: NextPage = () => {
   const [allReadyUser, setAllReadyUser] = useState(false)
 
   const handleSubmit = async (e: { preventDefault?: any; target: any }) => {
@@ -61,7 +77,7 @@ const Signup: NextPage = () => {
 
       const data = await res.json()
       if (data) {
-        router.push('/notes')
+        signIn('credentials', { email, password })
       }
     } else {
       setAllReadyUser(true)

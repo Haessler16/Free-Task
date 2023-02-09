@@ -18,12 +18,17 @@ export default async function CredentialsAuth(
   }
 
   // POST - ok
-  const { email, password } = req.body
+  const { email, password, callbackUrl } = req.body
 
   const getOne = await fetch(
     `${process.env.NEXTAUTH_URL}/api/user?type=one&email=${email}`,
   )
   const isUserAlReady = await getOne.json()
+
+  if (callbackUrl.includes('signup')) {
+    const user: iUser = isUserAlReady
+    return res.status(200).json(user)
+  }
 
   if (await comparePassword(password, isUserAlReady.password)) {
     const user: iUser = isUserAlReady

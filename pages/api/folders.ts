@@ -33,7 +33,6 @@ export default async function handleFolders(
   }
 
   if (req.method === 'POST') {
-    console.log({ title, userId })
     const folders = await prisma.folder.create({
       data: { title, userId },
     })

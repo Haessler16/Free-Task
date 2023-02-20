@@ -25,7 +25,7 @@ export default async function CredentialsAuth(
   )
   const isUserAlReady = await getOne.json()
 
-  if (callbackUrl.includes('signup')) {
+  if (callbackUrl?.includes('signup')) {
     const user: iUser = isUserAlReady
     return res.status(200).json(user)
   }

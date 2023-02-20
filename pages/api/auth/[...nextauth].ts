@@ -86,10 +86,10 @@ export const authOptions = {
             }),
           })
 
-          const bum = await posted.json()
+          const newUser = await posted.json()
 
-          account.id = bum.id
-          account.role = bum.role
+          account.id = newUser.id
+          account.role = newUser.role
 
           return true
         }
@@ -120,9 +120,16 @@ export const authOptions = {
       // Send properties to the client, like an access_token and user id from a provider.
 
       if (session.user) {
+        const getOne = await fetch(
+          `${process.env.NEXTAUTH_URL}/api/user?type=one&email=${session.user.email}`,
+        )
+
+        const oneUser = await getOne.json()
+
         session.user.provider = token.provider
         session.user.id = token.id
-        session.user.role = token.role
+
+        session.user.role = oneUser ? oneUser.role : token.role
       }
 
       return session
